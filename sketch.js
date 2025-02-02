@@ -49,7 +49,7 @@ function draw() {
 
 for (cell of cells){
 cell.display(); 
-setTimeout(cell.checkContents(), 5000); 
+setTimeout(cell.checkContents(), 50000); 
 }
 
 for (inkParticle of inkParticles){
@@ -68,7 +68,7 @@ this.w = w;
 this.h = h; 
 
 this.capacity = capacity; 
-this.inkInside = []; 
+
 
 }
 
@@ -82,6 +82,8 @@ rect (this.x, this.y, this.w, this.h);
 
 checkContents(){
 //this checks how many ink particles are inside each cell and stores which of them are inside, in an array.
+this.inkInside = []; 
+
 for (let i = 0; i<inkParticles.length; i++){
 if (inkParticles[i].x<this.x+this.w && inkParticles[i].x>this.x){
 this.inkInside.push(i); 
@@ -120,6 +122,7 @@ point (this.x, this.y);
 }
 
 move(){
-this.x++;
+
+this.x = lerp(this.x, this.x+cellWidth*2, 0.005);
 }
 }
