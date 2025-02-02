@@ -68,8 +68,6 @@ this.w = w;
 this.h = h; 
 
 this.capacity = capacity; 
-
-
 }
 
 display(){
@@ -99,10 +97,7 @@ for (let i = 0; i<this.inkInside.length; i++){
 let particleIndex = this.inkInside[i]; 
 inkParticles[particleIndex].move(); 
 }
-}else{
-console.log("don't move"); 
 }
-
 }
 
 }
@@ -122,7 +117,6 @@ point (this.x, this.y);
 }
 
 move(){
-
 this.x = lerp(this.x, this.x+cellWidth*2, 0.005);
 }
 }
