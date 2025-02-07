@@ -119,9 +119,7 @@ checkContents(){
 
 this.inkInside = []; 
 
-for (let i = 0; i<inkMolecules.length; i++){
-let molecule = inkMolecules [i]; 
-
+for (let molecule of inkMolecules){
 if (
 molecule.x >= this.x - this.w / 2 &&
 molecule.x < this.x + this.w / 2 &&
@@ -141,9 +139,6 @@ this.excessInk = []; //reset the excessInk to zero if there's nothing left.
 
 }
 
-checkWithNeighbouringCells(){
-
-}
 
 }
 
