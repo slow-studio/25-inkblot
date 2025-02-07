@@ -13,19 +13,17 @@ approach:
 
 - an ink molecule has:
     - position {x,y}
-    - size {r}
-
-- 
+    - size {h}, which is the same as the cell height.
 */
 
 //global declarations: 
 let cells = []; 
 const cellWidth = 10; //this is also the same width for the ink particles. 
 let cellHeight = 0; 
-const capacity = 3; //this is the capacity of what each cell can store. 
-
+const capacity = 1; //this is the capacity of what each cell can store. 
 
 let inkMolecules = []; 
+let numOfInkMolecules = 30; 
 
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
@@ -55,8 +53,14 @@ cell.findNeighbours();
 function createInk(){
 // create ink molecules
 
-for (let y = cells[0].y-(cellHeight/2)+cellWidth/2; y<=cellHeight-cellWidth/2; y+=cellWidth){
-inkMolecules.push(new InkMolecule(cells[4].x, y)); 
+//constructor(x, y, d = cellWidth)
+
+for (let i = 0; i<numOfInkMolecules; i++){
+inkMolecules.push (new InkMolecule(cells[4].x, cells[4].y)); 
+}
+
+for (let i = 0; i<numOfInkMolecules; i++){
+inkMolecules.push (new InkMolecule(cells[18].x, cells[4].y)); 
 }
 
 }
@@ -64,10 +68,11 @@ inkMolecules.push(new InkMolecule(cells[4].x, y));
 function draw() {
 cellFunctions(); 
 inkFunctions(); 
+
 }
 
 function cellFunctions(){
-for (cell of cells){
+for (let cell of cells){
 cell.display(); 
 cell.checkContents(); 
 cell.offloadInk(); 
@@ -75,7 +80,7 @@ cell.offloadInk();
 }
 
 function inkFunctions(){
-for (molecule of inkMolecules){
+for (let molecule of inkMolecules){
 molecule.display(); 
 }
 }
@@ -142,35 +147,37 @@ this.excessInk = []; //reset the excessInk to zero if there's nothing left.
 }
 
 offloadInk(){
-
 if (this.excessInk.length>1){
-for (let i = 0; i<this.excessInk.length; i++){
-inkMolecules[i].move(this.rightNeighbour.x); 
+for (let excessInkMolecule of this.excessInk){
+excessInkMolecule.move(this.rightNeighbour.x); 
+console.log(excessInkMolecule);
 }
 }
+
 }
 }
 
 //ink particle object. 
 class InkMolecule{
-constructor(x, y, d = cellWidth){
+constructor(x, y, d = cellWidth, h = cellHeight){
 this.x = x; 
 this.y = y; 
 this.d = d; 
+this.h = h; 
 }
 
 display(){
 noStroke(); 
 
-fill (0, 10); 
-square (this.x, this.y, this.d); 
+fill (0,1); 
+rect (this.x, this.y, this.d, this.h); 
 }
 
 move(destX){
-this.x = lerp(this.x, destX, 0.1); 
+this.x = lerp(this.x, destX, 0.01); 
 
 //stop lerp for tiny movements. 
-if (abs(this.x-this.destinationX)<0.5){
+if (abs(this.x-this.destinationX)<0.01){
 this.x = destX; 
 }
 
