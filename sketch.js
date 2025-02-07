@@ -25,7 +25,7 @@ let cellHeight = 0;
 const capacity = 1; //this is the capacity of what each cell can store. 
 
 let inkMolecules = []; 
-let numOfInkMolecules = 30; 
+let numOfInkMolecules = 100; 
 
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
@@ -113,7 +113,7 @@ this.rightNeighbour = cells[this.index + 1]; // right cell
 
 display(){
 stroke (0);
-strokeWeight (1); 
+strokeWeight (0); 
 noFill(); 
 
 rect (this.x, this.y, this.w, this.h);
