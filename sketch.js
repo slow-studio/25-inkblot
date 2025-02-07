@@ -9,11 +9,13 @@ approach:
     - position {x,y} on the surface
     - size {w,h} (we assume a 'cell' is rectangular)
     - capacity (how much of something can it hold)
-    - ability to 'speak' 
+    - ability to find its adjacent neighbours
+    - ability to send an ink to another position (this should technically be the surface's property, but anyhow). 
 
 - an ink molecule has:
     - position {x,y}
     - size {h}, which is the same as the cell height.
+    - the ability to move to a new destination position
 */
 
 //global declarations: 
@@ -56,11 +58,7 @@ function createInk(){
 //constructor(x, y, d = cellWidth)
 
 for (let i = 0; i<numOfInkMolecules; i++){
-inkMolecules.push (new InkMolecule(cells[4].x, cells[4].y)); 
-}
-
-for (let i = 0; i<numOfInkMolecules; i++){
-inkMolecules.push (new InkMolecule(cells[18].x, cells[4].y)); 
+inkMolecules.push (new InkMolecule(cells[cells.length/2].x, cells[cells.length/2].y)); 
 }
 
 }
@@ -149,8 +147,13 @@ this.excessInk = []; //reset the excessInk to zero if there's nothing left.
 offloadInk(){
 if (this.excessInk.length>1){
 for (let excessInkMolecule of this.excessInk){
+let prob = random(0,1); 
+
+if (prob<0.5){
 excessInkMolecule.move(this.rightNeighbour.x); 
-console.log(excessInkMolecule);
+}else{
+excessInkMolecule.move(this.leftNeighbour.x); 
+}
 }
 }
 
@@ -169,15 +172,15 @@ this.h = h;
 display(){
 noStroke(); 
 
-fill (0,1); 
+fill (0, 4); 
 rect (this.x, this.y, this.d, this.h); 
 }
 
 move(destX){
-this.x = lerp(this.x, destX, 0.01); 
+this.x = lerp(this.x, destX, 0.1); 
 
 //stop lerp for tiny movements. 
-if (abs(this.x-this.destinationX)<0.01){
+if (abs(this.x-this.destinationX)<0.1){
 this.x = destX; 
 }
 
