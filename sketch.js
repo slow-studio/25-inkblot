@@ -39,8 +39,15 @@ createInk();
 
 function createSurface(){
 //create cells
+let iteration = 0; 
 for (let x = 0+cellWidth/2; x<=width-cellWidth/2; x+=cellWidth){
-cells.push(new Cell (x, 0+cellHeight/2, cellWidth, cellHeight)); 
+cells.push(new Cell (x, 0+cellHeight/2, cellWidth, cellHeight, iteration)); 
+iteration++; 
+}
+
+//make each cell find their neighbours.
+for (let cell of cells){
+cell.findNeighbours(); 
 }
 }
 
@@ -75,13 +82,28 @@ molecule.display();
 
 //cell object. 
 class Cell{
-constructor(x, y, w, h){
+constructor(x, y, w, h, index){
 this.x = x; 
 this.y = y; 
 this.w = w; 
 this.h = h; 
 
 this.capacity = capacity; 
+
+this.index = index; 
+this.leftNeighbour = null;
+this.rightNeighbour = null; 
+}
+
+//cells find their neighbours on the surface. 
+findNeighbours(){
+if (this.index>0){
+this.leftNeighbour = cells[this.index - 1]; //left cell
+}
+if (this.index < cells.length - 1) {
+this.rightNeighbour = cells[this.index + 1]; // right cell
+}
+
 }
 
 display(){
@@ -106,9 +128,21 @@ molecule.x < this.x + this.w / 2 &&
 molecule.y >= this.y - this.h / 2 &&
 molecule.y < this.y + this.h / 2
 ) {
-this.inkInside.push(i);
+this.inkInside.push(molecule);
 }
 }
+
+//check whether the cell has too much ink. 
+if (this.inkInside.length> this.capacity){
+this.excessInk = this.inkInside.slice(this.capacity); //make a new array for all the extra ink. 
+}else{
+this.excessInk = []; //reset the excessInk to zero if there's nothing left. 
+}
+
+}
+
+checkWithNeighbouringCells(){
+
 }
 
 }
@@ -129,27 +163,3 @@ square (this.x, this.y, this.d);
 }
 
 }
-
-/*
-checkContents(){
-//this checks how many ink particles are inside each cell and stores which of them are inside, in an array.
-this.inkInside = []; 
-
-for (let i = 0; i<inkMolecules.length; i++){
-if (inkMolecules[i].x<this.x+this.w && inkMolecules[i].x>this.x){
-this.inkInside.push(i); 
-}
-}
-
-if (this.inkInside.length>this.capacity){
-this.inkInside.splice(0, this.capacity);
-
-console.log(this.inkInside);
-
-for (let i = 0; i<this.inkInside.length; i++){
-let particleIndex = this.inkInside[i]; 
-inkMolecules[particleIndex].move(); 
-}
-}
-}
-*/
