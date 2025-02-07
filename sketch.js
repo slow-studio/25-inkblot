@@ -22,7 +22,8 @@ approach:
 let cells = []; 
 const cellWidth = 10; //this is also the same width for the ink particles. 
 let cellHeight = 0; 
-const capacity = 2; //this is the capacity of what each cell can store. 
+const capacity = 3; //this is the capacity of what each cell can store. 
+
 
 let inkMolecules = []; 
 
@@ -55,7 +56,7 @@ function createInk(){
 // create ink molecules
 
 for (let y = cells[0].y-(cellHeight/2)+cellWidth/2; y<=cellHeight-cellWidth/2; y+=cellWidth){
-inkMolecules.push(new InkMolecule(cells[0].x, y)); 
+inkMolecules.push(new InkMolecule(cells[4].x, y)); 
 }
 
 }
@@ -63,14 +64,13 @@ inkMolecules.push(new InkMolecule(cells[0].x, y));
 function draw() {
 cellFunctions(); 
 inkFunctions(); 
-
-noLoop();
 }
 
 function cellFunctions(){
 for (cell of cells){
 cell.display(); 
 cell.checkContents(); 
+cell.offloadInk(); 
 }
 }
 
@@ -89,6 +89,8 @@ this.w = w;
 this.h = h; 
 
 this.capacity = capacity; 
+this.inkInside = []; 
+this.excessInk = []; 
 
 this.index = index; 
 this.leftNeighbour = null;
@@ -139,7 +141,14 @@ this.excessInk = []; //reset the excessInk to zero if there's nothing left.
 
 }
 
+offloadInk(){
 
+if (this.excessInk.length>1){
+for (let i = 0; i<this.excessInk.length; i++){
+inkMolecules[i].move(this.rightNeighbour.x); 
+}
+}
+}
 }
 
 //ink particle object. 
@@ -153,8 +162,18 @@ this.d = d;
 display(){
 noStroke(); 
 
-fill (0); 
+fill (0, 10); 
 square (this.x, this.y, this.d); 
+}
+
+move(destX){
+this.x = lerp(this.x, destX, 0.1); 
+
+//stop lerp for tiny movements. 
+if (abs(this.x-this.destinationX)<0.5){
+this.x = destX; 
+}
+
 }
 
 }
