@@ -73,7 +73,7 @@ function cellFunctions(){
 for (let cell of cells){
 cell.display(); 
 cell.checkContents(); 
-cell.offloadInk(); 
+// cell.offloadInk(); 
 }
 }
 
