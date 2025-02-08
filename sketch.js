@@ -10,12 +10,12 @@ approach:
     - size {w,h} (we assume a 'cell' is rectangular)
     - capacity (how much of something can it hold)
     - ability to find its adjacent neighbours
-    - ability to send an ink particle to a neighbouring cell (this should technically be the surface's property, but anyhow). 
+    - ability to send an ink particle to a neighbouring cell, if the ink it contains exceeds its capacity (this should technically be the surface's property, but anyhow). 
 
 - an ink molecule has:
     - position {x,y}
     - size {h}, which is the same as the cell height.
-    - the ability to move to a new destination position
+    - the ability to move to a new destination position, at a certain rate or 'speed' (this is p5.lerp() right now)
 */
 
 //global declarations: 
