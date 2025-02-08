@@ -17,22 +17,17 @@ approach:
 -
 */
 
-//global declarations:
-
-let cells = [];
-const cellWidth = 10; //this is also the same width for the ink particles.
-let cellHeight = 0;
-
-
-let inkMolecules = [];
+let cells = []
+const cellWidth = 10      // this is also the same width for the ink particles
+let cellHeight = 0
+let inkMolecules = []
 
 function setup() {
-  createCanvas(1000, 562) //in 16:9 aspect ratio.
-  cellHeight = height; //make cellHeight the same as canvas height.
+  createCanvas(1000, 562) // in 16:9 aspect ratio
+  background(255)         //the background only needs to be drawn once
+
+  cellHeight = height     // make cellHeight the same as canvas height
   rectMode (CENTER)
-
-  background(255) //the background only needs to be drawn once.
-
   createSurface()
   createInk()
 }
@@ -142,6 +137,7 @@ class Cell {
   checkContents() {
     this.inkInside = []
 
+    console.log(inkMolecules)
     for(let molecule of inkMolecules) {
       if(
         molecule.x >= this.x - this.w / 2 &&
@@ -165,6 +161,7 @@ class Cell {
   offloadInk() {
     if(this.excessInk.length > 1) {
       for(let i = 0; i < this.excessInk.length; i++) {
+        // inkMolecules[i].move(this.rightNeighbour.x)
         inkMolecules[i].move(this.rightNeighbour.x)
       }
     }
@@ -185,11 +182,13 @@ class InkMolecule {
     square (this.x, this.y, this.d)
   }
 
+  /**
+   * given a destination x-coordinate, move the molecule
+   * smoothly to the destination x-coordinate
+   * @param {int} destX - target coordinate
+   */
   move(destX) {
-    this.x = lerp(this.x, destX, 0.1)
-    // stop lerp for tiny movements.
-    if(abs(this.x - this.destinationX) < 0.5) {
-      this.x = destX
-    }
+    const d = lerp(this.x, destX, 0.1)
+    this.x = (abs(d - this.destinationX) < 0.5) ? destX : d
   }
 }
