@@ -172,7 +172,7 @@ this.h = h;
 display(){
 noStroke(); 
 
-fill (0, 4); 
+fill (0, 1); 
 rect (this.x, this.y, this.d, this.h); 
 }
 
