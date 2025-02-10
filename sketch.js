@@ -47,12 +47,12 @@ The unit of time at which the ink meets the surface. There are certain events th
 */
 
 class InkMolecule {
-  constructor({ x, y, width, height, viscosity = 0.3 }) {
+  constructor({ x, y, w = width, h = height, viscosity = 0.3 }) {
     this.viscosity = viscosity
     this.x = x
     this.y = y
-    this.width = width
-    this.height = height
+    this.w = w
+    this.h = h
     this.colour = [0, 0, 139]
   }
 
@@ -69,7 +69,7 @@ class InkMolecule {
   /**
    * display the molecule
    */
-  display() {
+  display() {    
     noStroke()
     fill(...this.colour, 4)
     rect(this.x, this.y, this.width, this.height)
@@ -91,16 +91,17 @@ class Cell {
    * @param {int} w - widh of the cell
    * @param {int} h - height of the cell
    */
-  constructor({x, y, w, h, index}) {
+  constructor({x, y, w, h, index, capacity = 1}) {
     this.x = x
     this.y = y
     this.w = w
     this.h = h
     this.index = index
-    this.capacity = capacity
+    this.capacity = capacity    // total capacity to hold quantity of molecules
+    this.contains = []          // contains how many molecules in it (array of `molecule` objects)
 
-    this.inkInside = []
-    this.excessInk = []
+    // this.inkInside = []
+    // this.excessInk = []
     this.leftNeighbour = null
     this.rightNeighbour = null
   }
@@ -114,6 +115,18 @@ class Cell {
     noFill() 
     rect(this.x, this.y, this.w, this.h);
   }
+
+  /**
+   * given a quantity, check if the quantity exceeds the cells capacity and return
+   * true or false
+   * 
+   * @param {int} q - quantity
+   * 
+   * @returns {bool} - true, if it exceeds, false otherwise
+   */
+  exceedsCapacity(q) {
+    return (q > this.capacity)
+  }
 }
 
 
@@ -126,9 +139,7 @@ class Cell {
  * @returns {arr} cells - an array of the mesh/grid of the surface
  */
 function createSurface(cellWidth = 10, cellHeight = height) {
-  let iteration = 0
   let cells = []
-
   for(let i = 0, x = cellWidth / 2; x <= width - cellWidth / 2; x += cellWidth, i++) {
     cells.push(new Cell({
       x: x,
@@ -149,31 +160,15 @@ function createSurface(cellWidth = 10, cellHeight = height) {
  * 
  * @returns {arr} molecules - an array of molecules
  */
-function createInk(cells, n = 100) {
+function pour(cells, n = 100) {
   let molecules = []
   for(let i = 0; i < n; i++) {
-    // ink is hitting the surface at it's center coordinates
-    molecules.push(new InkMolecule(cells[cells.length / 2].x, cells[cells.length / 2].y))
+    molecules.push(new InkMolecule({
+      x: cells[cells.length / 2].x,
+      y: cells[cells.length / 2].y
+    }))
   }
-
   return molecules
-}
-
-function cellFunctions() {
-  for(let cell of cells) {
-    // cell.display()
-    cell.checkContents()   // this will check 
-
-    // here I should be able to decide whether to offload the ink or not from a call
-    cell.offloadInk() 
-  }
-}
-
-// putting the ink on the surface
-function inkFunctions() {
-  for(let molecule of inkMolecules) {
-    molecule.display()
-  }
 }
 
 //cell object. 
@@ -258,14 +253,7 @@ function inkFunctions() {
 
 // ----------
 
-//global declarations:
-// let cells = [] 
-// const cellWidth = 10          // this is also the same width for the ink particles
-// let cellHeight = 0   
-const capacity = 1            // this is the capacity of what each cell can store
-
-let inkMolecules = []
-// let numOfInkMolecules = 100
+let surface, molecules;
 
 function setup() {
   // default settings
@@ -273,11 +261,24 @@ function setup() {
   rectMode(CENTER)
   background(255)             // the background only needs to be drawn once
 
-  let surface = createSurface(10, height)
-  let molecules = createInk(surface)
+  surface = createSurface(10, height)
+  molecules = pour(surface)   // pour the molecules on the surface
+
+  // ideally, it should be molecules.pour(surface)
 }
 
 function draw() {
-  // cellFunctions()
-  inkFunctions()
+  // for each cell of the surface, check if its capacity exceeds the quantity of ink, spilt on it, if it does, move the excess ink to the the neighbouring cells
+  
+
+  for(let cell of surface) {
+    // cell.display()
+    cell.checkContents(molecules)
+
+    // here I should be able to decide whether to offload the ink or not from a call
+    // cell.offloadInk() 
+  }
+
+  // display all molecules
+  molecules.map((m) => m.display())
 }
