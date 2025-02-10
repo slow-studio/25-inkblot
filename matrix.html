@@ -22,7 +22,7 @@
 </head>
 <body>
 <script>
-  let size = 7              // Grid size (Adjustable)
+  let size = 7              // Grid size(Adjustable)
   let n = 100               // Total sum to distribute
   let peakMatrix, fillMatrix, queue = []
   let cellSize = 50         // Size of each cell in pixels
@@ -53,7 +53,7 @@
     let center = Math.floor(size / 2)
     let numbers = []
 
-    for (let i = 0; i < size * size; i++) {
+    for(let i = 0; i < size * size; i++) {
       numbers.push(i + 1)
     }
     numbers.sort(() => Math.random() - 0.5)  // Shuffle values
@@ -61,9 +61,9 @@
     let queue = [[center, center]]
     let index = 0
 
-    while (queue.length > 0) {
+    while(queue.length > 0) {
       let [x, y] = queue.shift()
-      if (matrix[x][y] === 0) {
+      if(matrix[x][y] === 0) {
         matrix[x][y] = numbers[index++]
       }
       let neighbors = [
@@ -77,14 +77,14 @@
   }
 
   function distributeFlow() {
-    if (queue.length === 0) return
+    if(queue.length === 0) return
     let [x, y] = queue.shift()
-    if (fillMatrix[x][y] < peakMatrix[x][y]) {
+    if(fillMatrix[x][y] < peakMatrix[x][y]) {
       fillMatrix[x][y]++
       n--
     }
 
-    // TODO: control the degree of neighbour finding, can be +/-2 or +/-n (to simulate faster flow)
+    // TODO: control the degree of neighbour finding, can be +/-2 or +/-n(to simulate faster flow)
     let neighbors = [
       [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]
     ].filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < size && ny < size);
@@ -93,8 +93,8 @@
   }
 
   function drawMatrix() {
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
+    for(let i = 0; i < size; i++) {
+      for(let j = 0; j < size; j++) {
         let filledRatio = fillMatrix[i][j] / peakMatrix[i][j]
         let colourValue = map(filledRatio, 0, 1, 50, 255)
         fill(colourValue, 0, colourValue)               // increase/decrease intensity of the colour
