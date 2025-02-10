@@ -22,10 +22,11 @@
 </head>
 <body>
 <script>
-  let size = 7              // Grid size(Adjustable)
-  let n = 100               // Total sum to distribute
+  let size = 10              // Grid size(Adjustable)
+  let n = 200               // Total sum to distribute
   let peakMatrix, fillMatrix, queue = []
   let cellSize = 50         // Size of each cell in pixels
+  let fr = 10
 
   function setup() {
     createCanvas(size * cellSize, size * cellSize)
@@ -35,8 +36,9 @@
     fillMatrix = Array.from({ length: size }, () => Array(size).fill(0))
 
     let center = Math.floor(size / 2)
-    queue.push([center, center])  // Start filling from center
-    frameRate(20)                 // Controls the animation speed
+    // queue.push([center, center])  // Start filling from center
+    queue.push([int(random(size)), int(random(size))])  // Start filling from center
+    frameRate(fr)                 // Controls the animation speed
   }
 
   function draw() {
