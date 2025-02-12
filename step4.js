@@ -88,8 +88,8 @@ function drawMatrix() {
     for(let j = 0; j < size; j++) {
       let filledRatio = fillMatrix[i][j] / peakMatrix[i][j]
       let colourValue = map(filledRatio, 0, 1, 50, 255)
-      // fill(colourValue, 0, colourValue)               // increase/decrease intensity of the colour
-      fill('#f1f1f1')
+      fill(colourValue, 0, 255/colourValue)               // increase/decrease intensity of the colour
+      // fill('#f1f1f1')
       rect(j * cellSize, i * cellSize, cellSize, cellSize)
       
       // text colour & fill
