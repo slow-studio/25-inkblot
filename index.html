@@ -1,25 +1,40 @@
 <!DOCTYPE html>
-<html lang="">
-
+<html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
-
-<title>inkBlot_1d</title>
-
-
-<!-- <script src="sketch.js"></script> -->
-<script src="matrix.js"></script>
-
+<title>Flow Matrix Visualization</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<style>
+  .matrix {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+    /* background-color: #1a1a1a; */
+    color: #f1f1f1;
+    font-family: Arial, sans-serif;
+  }
+  canvas {
+    border: 2px solid #f1f1f1;
+  }
+</style>
 </head>
-
 <body>
-<main>
-</main>
+
+<h1>Step 1</h1>
+<p>Firstly, create a grid and matrix of a specific size and set of values in it.</p>
+
+<h1>Step 2</h1>
+<p>Now there's a matrix, generate a peak matrix where the values there's one high value and the neighbouring values are lower than it.
+  Each value in the matrix, is associated with a colour gradient.
+</p>
+
+<!-- Canvas -->
+<div class="matrix"></div>
+
+<!-- <script src="step0.js"></script> -->
+<!-- <script src="step1.js"></script> -->
+<script src="step2.js"></script>
 </body>
-
 </html>
-
