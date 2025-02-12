@@ -1,5 +1,4 @@
-
-let size = 10              // Grid size(Adjustable)
+let size = 7              // Grid size(Adjustable)
 let n = 200               // Total sum to distribute
 let peakMatrix, fillMatrix, queue = []
 let cellSize = 50         // Size of each cell in pixels
@@ -17,18 +16,18 @@ function setup() {
   queue.push([int(random(size)), int(random(size))])  // Start filling from center
   frameRate(fr)                 // Controls the animation speed
 
-  background(20)
+  background(255)
   drawMatrix()                  // Render matrix visually
 }
 
-// function draw() {
-//   background(20)
-//   drawMatrix()                  // Render matrix visually
+function draw() {
+  background(20)
+  drawMatrix()                  // Render matrix visually
 
-//   // if(n > 0) {
-//   //   distributeFlow()
-//   // }
-// }
+  if(n > 0) {
+    distributeFlow(fillMatrix, peakMatrix)
+  }
+}
 
 function generateRandomPeakMatrix(size) {
   let matrix = Array.from({ length: size }, () => Array(size).fill(0))
@@ -58,21 +57,27 @@ function generateRandomPeakMatrix(size) {
   return matrix
 }
 
-// function distributeFlow() {
-//   if(queue.length === 0) return
-//   let [x, y] = queue.shift()
-//   if(fillMatrix[x][y] < peakMatrix[x][y]) {
-//     fillMatrix[x][y]++
-//     n--
-//   }
+/**
+ * given a fillMatrix and peakMatrix, distribute the flow of water/ink
+ * across neighbouring cells
+ * 
+ * @returns 
+ */
+function distributeFlow() {
+  if(queue.length === 0) return
+  let [x, y] = queue.shift()
+  if(fillMatrix[x][y] < peakMatrix[x][y]) {
+    fillMatrix[x][y]++
+    n--
+  }
 
-//   // TODO: control the degree of neighbour finding, can be +/-2 or +/-n(to simulate faster flow)
-//   let neighbors = [
-//     [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]
-//   ].filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < size && ny < size);
+  // TODO: control the degree of neighbour finding, can be +/-2 or +/-n(to simulate faster flow)
+  let neighbors = [
+    [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]
+  ].filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < size && ny < size);
 
-//   queue.push(...neighbors.sort(() => Math.random() - 0.5));  // Spread randomly
-// }
+  queue.push(...neighbors.sort(() => Math.random() - 0.5));  // Spread randomly
+}
 
 
 /**

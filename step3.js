@@ -21,8 +21,16 @@ function setup() {
   // frameRate(fr)                 // Controls the animation speed
 
   background(20)
-  // drawMatrix()                  // Render matrix visually
+  // printMatrix(peakMatrix)
+}
+
+function draw() {
+  background(20)
   printMatrix(peakMatrix)
+
+  if(n > 0) {
+    distributeFlow()
+  }
 }
 
 /**
@@ -45,7 +53,7 @@ function generateRandomPeakMatrix(size, x, peakRange) {
     let px = Math.floor(Math.random() * size);
     let py = Math.floor(Math.random() * size);
     if (!peaks.some(([px2, py2]) => px2 === px && py2 === py)) {
-      peaks.push([px, py]);
+      peaks.push([px, py])
     }
   }
 
@@ -119,4 +127,21 @@ function printMatrix(matrix) {
       text(matrix[i][j], j * cellSize + cellSize / 2, i * cellSize + cellSize / 2)
     }
   }
+}
+
+
+function distributeFlow() {
+  if(queue.length === 0) return
+  let [x, y] = queue.shift()
+  if(fillMatrix[x][y] < peakMatrix[x][y]) {
+    fillMatrix[x][y]++
+    n--
+  }
+
+  // TODO: control the degree of neighbour finding, can be +/-2 or +/-n(to simulate faster flow)
+  let neighbors = [
+    [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]
+  ].filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < size && ny < size);
+
+  queue.push(...neighbors.sort(() => Math.random() - 0.5));  // Spread randomly
 }
