@@ -1,21 +1,23 @@
-//inkblot_1d_v2; february 2025. 
+//inkblot_1d_mathematical; february 2025. 
+
+//shobhan and vivek suggested to make a matrix and manipulate that, instead of drawing shapes; since p5's alpha was producing unintended effects. 
 
 /*
 approach: 
 
-- there is a 'surface' that has many 'cells'. in code, the screen is the surface and the cells are defined in 'class Cell'.
+- there is a 'surface', made up of many 'cells', on which 'ink molecules' are dropped. in this program, the screen is the surface, cells are defined in class Cell and ink molecules are defined in class InkMolecule. 
 
-- each cell has:
-    - position {x,y} on the surface
-    - size {w,h} (we assume a 'cell' is rectangular)
-    - capacity (how much of something can it hold)
-    - ability to find its adjacent neighbours
-    - ability to send an ink particle to a neighbouring cell, if the ink it contains exceeds its capacity (this should technically be the surface's property, but anyhow). 
+- each cell has
+    - position: {x, y} on surface
+    - size: {w, h}
+    - how much ink can it hold: {capacity}
+    - ability to find adjacent neighbours
+    - ability to change colours based on number of ink molecules. 
+    - ability to offload ink molecules if they are greater than capacity. 
 
-- an ink molecule has:
-    - position {x,y}
-    - size {h}, which is the same as the cell height.
-    - the ability to move to a new destination position, at a certain rate or 'speed' (this is p5.lerp() right now)
+an ink molecule has: 
+    - position :{x,y}
+    - ability to move to a new position, at a rate or speed. 
 */
 
 //global declarations: 
