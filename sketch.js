@@ -11,6 +11,7 @@ approach:
     - position: {x, y} on surface
     - size: {w, h}
     - how much ink can it hold: {capacity}
+    - grayscale-value: {c} 
     - ability to find adjacent neighbours
     - ability to change colours based on number of ink molecules. 
     - ability to offload ink molecules if they are greater than capacity. 
@@ -22,12 +23,12 @@ an ink molecule has:
 
 //global declarations: 
 let cells = []; 
-const cellWidth = 10; //this is also the same width for the ink particles. 
-let cellHeight = 0; 
-const capacity = 1; //this is the capacity of what each cell can store. 
+const cellWidth = 5; //this is also the same width for the ink particles. 
+let cellHeight = 562; 
+const capacity = 255; //this is the capacity of what each cell can store. 
 
 let inkMolecules = []; 
-let numOfInkMolecules = 255; 
+let numOfInkMolecules = 10000; 
 
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
@@ -67,15 +68,16 @@ inkMolecules.push (new InkMolecule(cells[cells.length/2].x, cells[cells.length/2
 
 function draw() {
 cellFunctions(); 
-inkFunctions(); 
+//inkFunctions(); 
 
+filter (INVERT);
 }
 
 function cellFunctions(){
 for (let cell of cells){
 cell.display(); 
 cell.checkContents(); 
-// cell.offloadInk(); 
+cell.offloadInk(); 
 }
 }
 
@@ -99,7 +101,9 @@ this.excessInk = [];
 
 this.index = index; 
 this.leftNeighbour = null;
-this.rightNeighbour = null; 
+this.rightNeighbour = null;
+
+this.c = 255; 
 }
 
 //cells find their neighbours on the surface. 
@@ -116,7 +120,16 @@ this.rightNeighbour = cells[this.index + 1]; // right cell
 display(){
 stroke (0);
 strokeWeight (0); 
-noFill(); 
+
+console.log(this.c); 
+
+//this.c = map(this.inkInside.length, 0, inkMolecules.length, 255, 0);
+// this.c = min(this.inkInside.length, this.capacity); // Ensure it doesn't exceed 255
+// fill(255 - this.c); // Inverts grayscale logic
+
+this.c = this.inkInside.length; 
+fill (this.c); 
+
 
 rect (this.x, this.y, this.w, this.h);
 }
