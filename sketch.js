@@ -67,6 +67,7 @@ inkMolecules.push (new InkMolecule(cells[cells.length/2].x, cells[cells.length/2
 }
 
 function draw() {
+background(255); //the background only needs to be drawn once.
 cellFunctions(); 
 //inkFunctions(); 
 
