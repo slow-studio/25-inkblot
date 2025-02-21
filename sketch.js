@@ -1,16 +1,33 @@
 //inkblot, but only with math; february 2025.
 
+let seed = 10000 //seed value. 
+let capacity = 255;
+let maxTransfer = 8; 
+
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
 
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
-
 }
 
 function draw() {
 background(255);
 
 noLoop();
+}
+
+//drawing functions: 
+function dropInk(x, y, seed){
+//change colour of wherever the ink is dropped and begin thinking about offloading. 
+
+let col = constrain(seed, 0, 255); 
+
+changeColour(pos(x,y), col, col, col); 
+
+}
+
+function mousePressed(){
+dropInk(mouseX, mouseY); 
 }
 
 //helper functions:
