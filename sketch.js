@@ -1,19 +1,8 @@
 //inkblot, but only with math; february 2025.
 
-/*
-//logic: 
-
-- go through the screen. 
-- see if what you contain is higher than capacity. 
-- if higher, choose to offload. 
-- 
-
-*/
-
 let seed = -10000;
 let capacity = 0; //it can store jet-black values. 
 let maxTransferRate = 8; 
-
 
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
