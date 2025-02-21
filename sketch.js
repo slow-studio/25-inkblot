@@ -10,7 +10,7 @@
 
 */
 
-let seed = 10000;
+let seed = -10000;
 let capacity = 255;
 let maxTransferRate = 8; 
 
@@ -24,11 +24,34 @@ pixelDensity(1); //always treat one-pixel as one-pixel in higher density display
 function draw() {
 background(255);
 
+for (let x = 0; x<width;x++){
+dropInk(x, height/2); 
+}
 
 //noLoop();
 }
 
-function findNeighbourPixels(x, y) {
+function dropInk(x, y, seed){
+//when ink is dropped, colour is changed.
+let col = constrain(seed, 0, 255); 
+
+changeColour(pos(x,y),col, col, col ); 
+
+offload(x, y); 
+}
+
+
+
+//helper functions:
+
+function pos(x, y) {
+//accept coordinates. then, return an index position in the pixels array.
+
+//since the pixels array stores rgba values, i multiply the position by 4 to get the right index number.
+return (floor(x) + floor(y) * width) * 4;
+}
+
+function findNeighbours(x, y) {
 let neighbors = [];
 
 let positions = [
@@ -55,7 +78,6 @@ neighbors.push(positions[i]);
 return neighbors;
 }
 
-//helper functions:
 function changeColour(indices, r, g, b, a = 255) {
 loadPixels(); //load all pixels on the screen.
 
@@ -73,9 +95,3 @@ pixels[index + 3] = a;
 updatePixels(); //update all pixels on the screen.
 }
 
-function pos(x, y) {
-//accept coordinates. then, return an index position in the pixels array.
-
-//since the pixels array stores rgba values, i multiply the position by 4 to get the right index number.
-return (floor(x) + floor(y) * width) * 4;
-}
