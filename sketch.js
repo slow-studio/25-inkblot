@@ -1,9 +1,5 @@
 //inkblot, but only with math; february 2025.
 
-let seed = -10000;
-let capacity = 0; //it can store jet-black values. 
-let maxTransferRate = 8; 
-
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
 
@@ -26,14 +22,14 @@ noLoop();
 
 //helper functions:
 function pos(x, y) {
-//accept coordinates. then, return an index position in the pixels array.
+//return an index position in the pixels array, based on given coordinates. 
 
 //since the pixels array stores rgba values, i multiply the position by 4 to get the right index number.
 return (floor(x) + floor(y) * width) * 4;
 }
 
 function findNeighbours(index) {
-//returns an array of valid first-neighbour indices. 
+//return an array of valid first-neighbour indices, based on given index number.  
 
 let neighbors = [];
 
@@ -66,6 +62,8 @@ return neighbors;
 }
 
 function changeColour(indices, r, g, b, a = 255) {
+//update all pixels called, with rgba values. 
+
 loadPixels(); //load all pixels on the screen.
 
 if (!Array.isArray(indices)) {
