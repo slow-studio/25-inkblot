@@ -11,7 +11,7 @@
 */
 
 let seed = -10000;
-let capacity = 255;
+let capacity = 0; //it can store jet-black values. 
 let maxTransferRate = 8; 
 
 
@@ -19,31 +19,23 @@ function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
 
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
+
 }
 
 function draw() {
 background(255);
 
-for (let x = 0; x<width;x++){
-dropInk(x, height/2); 
+let firstPos = pos(200, 200); 
+let neighbours = findNeighbours (firstPos); 
+
+changeColour([firstPos, ...neighbours], 255, 0, 0); 
+
+console.log(firstPos, neighbours); 
+
+noLoop();
 }
-
-//noLoop();
-}
-
-function dropInk(x, y, seed){
-//when ink is dropped, colour is changed.
-let col = constrain(seed, 0, 255); 
-
-changeColour(pos(x,y),col, col, col ); 
-
-offload(x, y); 
-}
-
-
 
 //helper functions:
-
 function pos(x, y) {
 //accept coordinates. then, return an index position in the pixels array.
 
@@ -51,24 +43,30 @@ function pos(x, y) {
 return (floor(x) + floor(y) * width) * 4;
 }
 
-function findNeighbours(x, y) {
+function findNeighbours(index) {
+//returns an array of valid first-neighbour indices. 
+
 let neighbors = [];
 
+// convert index back to x and y positions. 
+let x = (index / 4) % width;
+let y = floor((index / 4) / width);
+
 let positions = [
-pos(x - 1, y), // left. 
-pos(x + 1, y), // right.
-pos(x, y - 1), // top.
-pos(x, y + 1), // bottom.
-pos(x - 1, y - 1), // top-left.
-pos(x + 1, y - 1), // top-right.
-pos(x - 1, y + 1), // bottom-left.
-pos(x + 1, y + 1), // bottom-right.
+pos(x - 1, y), // left
+pos(x + 1, y), // right
+pos(x, y - 1), // top
+pos(x, y + 1), // bottom
+pos(x - 1, y - 1), // top-left
+pos(x + 1, y - 1), // top-right
+pos(x - 1, y + 1), // bottom-left
+pos(x + 1, y + 1), // bottom-right
 ];
 
-// filter out out-of-bounds positions:
+// Filter out out-of-bounds positions
 for (let i = 0; i < positions.length; i++) {
-let nx = x + [-1, 1, 0, 0, -1, 1, -1, 1][i]; // x-offsets.
-let ny = y + [0, 0, -1, 1, -1, -1, 1, 1][i]; // y-offsets.
+let nx = x + [-1, 1, 0, 0, -1, 1, -1, 1][i]; // x-offsets
+let ny = y + [0, 0, -1, 1, -1, -1, 1, 1][i]; // y-offsets
 
 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
 neighbors.push(positions[i]);
