@@ -10,13 +10,6 @@ pixelDensity(1); //always treat one-pixel as one-pixel in higher density display
 function draw() {
 background(255);
 
-let firstPos = pos(200, 200); 
-let neighbours = findNeighbours (firstPos); 
-
-changeColour([firstPos, ...neighbours], 255, 0, 0); 
-
-console.log(firstPos, neighbours); 
-
 noLoop();
 }
 
@@ -79,4 +72,3 @@ pixels[index + 3] = a;
 
 updatePixels(); //update all pixels on the screen.
 }
-
