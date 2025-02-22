@@ -1,16 +1,27 @@
 //inkblot, but only with math; february 2025.
 
+//i'm going to drop ink and make a pixel red. 
+
+let seed = 1000; 
+
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
 
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
+background (255); 
+dropInk(width/2, height/2, seed); 
 }
 
 function draw() {
-background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other). 
+//background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other). 
 
 noLoop();
+}
+
+function dropInk(x,y, quantity){
+let col = constrain(quantity, 0, 255); 
+changeColour(pos(x, y), col); 
 }
 
 //helper functions:
