@@ -10,12 +10,16 @@ function setup() {
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
   background(255);
+  loadPixels(); //load all pixels on the screen.
   dropInk(200, 562 / 2, seed);
+  updatePixels(); // update all pixels on the screen.
 }  
 
 
 function draw() {
-  //background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other).
+  // background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other).
+  
+  loadPixels(); //load all pixels on the screen.
 
   for (let i = 0; i < pixels.length; i += 4) {
     check(i);
@@ -24,6 +28,8 @@ function draw() {
   changeColour(changedIndices);
 
   changedIndices.length = 0; //reset the changedIndex array.
+
+  updatePixels(); // update all pixels on the screen.
 
   //noLoop();
 }
@@ -99,8 +105,6 @@ function findNeighbours(index) {
 function changeColour(indices, a = 255) {
   //update all pixels called, with rgba values.
 
-  loadPixels(); //load all pixels on the screen.
-
   if (!Array.isArray(indices)) {
     indices = [indices]; // convert single index to array.
   }
@@ -110,5 +114,4 @@ function changeColour(indices, a = 255) {
     pixels[index + 3] = a;
   }
 
-  updatePixels(); //update all pixels on the screen.
 }
