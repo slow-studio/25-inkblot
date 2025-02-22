@@ -22,7 +22,7 @@ function draw() {
   loadPixels(); //load all pixels on the screen.
 
   for (let i = 0; i < pixels.length; i += 4) {
-    check(i);
+    check(i+3);
   }
 
   changeAlpha(changedIndices);
