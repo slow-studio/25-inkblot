@@ -25,7 +25,7 @@ function draw() {
     check(i);
   }
 
-  changeColour(changedIndices);
+  changeAlpha(changedIndices);
 
   changedIndices.length = 0; //reset the changedIndex array.
 
@@ -59,7 +59,7 @@ function check(index) {
 
 function dropInk(x, y, quantity) {
   let col = constrain(quantity, 0, 255);
-  changeColour(pos(x, y), col);
+  changeAlpha(pos(x, y), col);
 }
 
 function pos(x, y) {
@@ -102,7 +102,7 @@ function findNeighbours(index) {
   return neighbors;
 }
 
-function changeColour(indices, a = 255) {
+function changeAlpha(indices, a = 255) {
   //update all pixels called, with rgba values.
 
   if (!Array.isArray(indices)) {
