@@ -1,22 +1,23 @@
 //inkblot, but only with math; february 2025.
 
-//i'm going to drop ink and make a pixel red. 
-
 let seed = 1000; 
+let redValuesOfEachPixel = []; 
+
+let onlyPixels = []; 
 
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
+
+//initialise onlyPixels: 
+for (let n = 0; n<width*height; n++){
+onlyPixels.push(0); 
+}
 
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
 background (255); 
 dropInk(width/2, height/2, seed); 
-}
 
-function draw() {
-//background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other). 
-
-noLoop();
 }
 
 function dropInk(x,y, quantity){
@@ -24,9 +25,17 @@ let col = constrain(quantity, 0, 255);
 changeColour(pos(x, y), col); 
 }
 
+function draw() {
+//background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other). 
+
+console.log(onlyPixels.length); 
+
+noLoop();
+}
+
 //helper functions:
 function pos(x, y) {
-//return an index position in the pixels array, based on given coordinates. 
+//return an index position, based on given coordinates. 
 
 //since the pixels array stores rgba values, i multiply the position by 4 to get the right index number.
 return (floor(x) + floor(y) * width) * 4;
