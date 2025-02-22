@@ -96,7 +96,7 @@ function findNeighbours(index) {
   return neighbors;
 }
 
-function changeColour(indices, r, g, b, a = 255) {
+function changeColour(indices, a = 255) {
   //update all pixels called, with rgba values.
 
   loadPixels(); //load all pixels on the screen.
@@ -106,9 +106,7 @@ function changeColour(indices, r, g, b, a = 255) {
   }
 
   for (let index of indices) {
-    pixels[index + 0] = r;
-    pixels[index + 1] = g;
-    pixels[index + 2] = b;
+    pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 0;
     pixels[index + 3] = a;
   }
 
