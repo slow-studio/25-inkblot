@@ -1,93 +1,87 @@
 //inkblot, but only with math; february 2025.
 
-let seed = 1000;
-let readPixels = [];
-
-let changedIndices = [];
+let seed = 1000000;
+let posforseed_x, posforseed_y;
+let paper = []; // a virtual array where each element corresponds to one pixel on the screen.
 
 function setup() {
-  createCanvas(1000, 562); //in 16:9 aspect ratio.
+  createCanvas(10, 5);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
   background(255);
-  loadPixels(); //load all pixels on the screen.
-  dropInk(200, 562 / 2, seed);
-  updatePixels(); // update all pixels on the screen.
-}  
 
+  for (let i = 0; i < width * height; ++i) {
+    paper.push(0);
+  }
+  console.log(`set up ${paper.length} pixels on paper.`);
+
+  posforseed_x = width / 2;
+  posforseed_y = height / 2;
+  paper[pos(posforseed_x, posforseed_y)] = seed;
+  console.log(
+    `paper-pixel at (${posforseed_x}, ${posforseed_y}) has ${seed} ink units dropped on it.`
+  );
+
+  loadPixels();
+
+  let indexofseed = pos(posforseed_x, posforseed_y);
+  console.log(`paper at ${indexofseed} holds value = ${paper[indexofseed]}`);
+  changeRGBA(indexofseed, paper[indexofseed]);
+
+  updatePixels();
+
+  console.log(getNeighbours(0));
+}
 
 function draw() {
-  // background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other).
-  
-  loadPixels(); //load all pixels on the screen.
-
-  for (let i = 0; i < pixels.length; i += 4) {
-    check(i+3);
-  }
-
-  changeAlpha(changedIndices);
-
-  changedIndices.length = 0; //reset the changedIndex array.
-
-  updatePixels(); // update all pixels on the screen.
-
-  //noLoop();
+  // noLoop();
+  // background(255);
+  // // for each pixel in paper[]
+  // for (let i = 0; i < paper.length; ++i) {
+  //   // blot ink from it to its neighbours
+  //   blot(i);
+  // }
+  // for (let i = 0; i < paper.length; i++) {
+  //   changeRGBA(i, paper[i]);
+  // }
+  // updatePixels();
+  // console.log(frameRate());
 }
 
-function check(index) {
-  //read my red:
-  if (pixels[index] > 0) {
-    //this means the pixel has alpha > 0 (i.e., it is not fully transparent).
+function blot(index) {
+  const step = 15;
 
-    //find neighbours:
-    let neighbours = findNeighbours(index);
+  //first get neighbours:
+  let neighbours = getNeighbours(index);
 
-    //check difference between each neighbour:
-    for (let i = 0; i < neighbours.length; i++) {
-      if (pixels[index] > neighbours[i]) {
-        changedIndices.push(neighbours[i + 0]);
-      } else {
-        return;
-      }
+  for (let i = 0; i < neighbours.length; i++) {
+    if (paper[index] > paper[neighbours[i]] + step + 1) {
+      paper[index] -= step;
+      paper[neighbours[i]] += step;
     }
-  } else {
-    return;
   }
+
+  //console.log(neighbours);
 }
 
-//helper functions:
+function getNeighbours(index) {
+  let neighbours = [];
 
-function dropInk(x, y, quantity) {
-  let col = constrain(quantity, 0, 255);
-  changeAlpha(pos(x, y), col);
-}
-
-function pos(x, y) {
-  //return an index position, based on given coordinates.
-
-  //since the pixels array stores rgba values, i multiply the position by 4 to get the right index number.
-  return (floor(x) + floor(y) * width) * 4;
-}
-
-function findNeighbours(index) {
-  //return an array of valid first-neighbour indices, based on given index number.
-
-  let neighbors = [];
-
-  // convert index back to x and y positions.
-  let x = (index / 4) % width;
-  let y = floor(index / 4 / width);
+  let indexCoordinate = inversePos(index);
+  let x = indexCoordinate[0],
+    y = indexCoordinate[1];
 
   let positions = [
-    pos(x - 1, y), // left
-    pos(x + 1, y), // right
-    pos(x, y - 1), // top
-    pos(x, y + 1), // bottom
     pos(x - 1, y - 1), // top-left
+    pos(x, y - 1), // top
     pos(x + 1, y - 1), // top-right
-    pos(x - 1, y + 1), // bottom-left
+    pos(x + 1, y), // right
     pos(x + 1, y + 1), // bottom-right
+    pos(x, y + 1), // bottom
+    pos(x - 1, y + 1), // bottom-left
+    pos(x - 1, y), // left
   ];
+
 
   // Filter out out-of-bounds positions
   for (let i = 0; i < positions.length; i++) {
@@ -95,23 +89,38 @@ function findNeighbours(index) {
     let ny = y + [0, 0, -1, 1, -1, -1, 1, 1][i]; // y-offsets
 
     if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-      neighbors.push(positions[i]);
+      neighbours.push(positions[i]);
     }
   }
+console.log(positions);
 
-  return neighbors;
+  return neighbours;
 }
 
-function changeAlpha(indices, a = 255) {
-  //update all pixels called, with rgba values.
+function dropInk(x, y, quantity) {
+  changeRGBA(pos(x, y), quantity > 255 ? 255 : quantity);
+}
 
-  if (!Array.isArray(indices)) {
-    indices = [indices]; // convert single index to array.
-  }
+function pos(x, y) {
+  let element = floor(x) + floor(y) * width;
+  // console.log(`pos(${x}, ${y}) found element ${element}.`)
+  return element;
+}
 
-  for (let index of indices) {
-    pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 0;
-    pixels[index + 3] = a;
-  }
+function inversePos(index) {
+  let x = floor(index % width);
+  let y = floor((index - x) / width);
 
+  // console.log(`inverse-pos for index ${index} is ${x}, ${y}.`)
+
+  return [x, y];
+}
+
+function changeRGBA(index, a = 255) {
+  index *= 4;
+  pixels[index + 0] =
+    pixels[index + 1] =
+    pixels[index + 2] =
+      a > 255 ? 0 : 255 - a;
+  pixels[index + 3] = 255;
 }
