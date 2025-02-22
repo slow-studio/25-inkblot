@@ -36,15 +36,15 @@ function draw() {
 
 function check(index) {
   //read my red:
-  if (pixels[index + 0] > 0) {
-    //this means the pixel contains red.
+  if (pixels[index] > 0) {
+    //this means the pixel has alpha > 0 (i.e., it is not fully transparent).
 
     //find neighbours:
     let neighbours = findNeighbours(index);
 
     //check difference between each neighbour:
     for (let i = 0; i < neighbours.length; i++) {
-      if (pixels[index + 0] > neighbours[i + 0]) {
+      if (pixels[index] > neighbours[i]) {
         changedIndices.push(neighbours[i + 0]);
       } else {
         return;
