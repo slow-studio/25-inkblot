@@ -8,7 +8,7 @@ pixelDensity(1); //always treat one-pixel as one-pixel in higher density display
 }
 
 function draw() {
-background(255);
+background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other). 
 
 noLoop();
 }
