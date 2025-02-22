@@ -13,10 +13,6 @@ function setup() {
   dropInk(200, 562 / 2, seed);
 }  
 
-function dropInk(x, y, quantity) {
-  let col = constrain(quantity, 0, 255);
-  changeColour(pos(x, y), col);
-}
 
 function draw() {
   //background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other).
@@ -54,6 +50,12 @@ function check(index) {
 }
 
 //helper functions:
+
+function dropInk(x, y, quantity) {
+  let col = constrain(quantity, 0, 255);
+  changeColour(pos(x, y), col);
+}
+
 function pos(x, y) {
   //return an index position, based on given coordinates.
 
