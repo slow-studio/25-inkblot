@@ -1,22 +1,16 @@
 //inkblot, but only with math; february 2025.
 
 let seed = 1000; 
-let redValuesOfEachPixel = []; 
+let readPixels = []; 
 
-let onlyPixels = []; 
+let changedIndices = []; 
 
 function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
-
-//initialise onlyPixels: 
-for (let n = 0; n<width*height; n++){
-onlyPixels.push(0); 
-}
-
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
-background (255); 
-dropInk(width/2, height/2, seed); 
+background (0, 255,255); 
+dropInk(200, 562/2, seed); 
 
 }
 
@@ -28,10 +22,40 @@ changeColour(pos(x, y), col);
 function draw() {
 //background(255); //i choose to draw the background at every frame, because the pixels should update every frame (and not stack on top of each other). 
 
-console.log(onlyPixels.length); 
-
-noLoop();
+for (let i =0; i<pixels.length; i+=4){
+check(i); 
 }
+
+changeColour(changedIndices); 
+
+changedIndices.length = 0; //reset the changedIndex array. 
+
+//noLoop();
+}
+
+function check(index){
+//read my red: 
+if (pixels[index + 0]>0){
+//this means the pixel contains red. 
+
+//find neighbours: 
+let neighbours = findNeighbours(index); 
+
+//check difference between each neighbour: 
+for (let i = 0; i<neighbours.length; i++){
+if (pixels[index + 0]>neighbours[i + 0]){
+changedIndices.push(neighbours[i + 0]); 
+}else{
+return
+}
+}
+
+}else{
+return
+}
+
+}
+
 
 //helper functions:
 function pos(x, y) {
