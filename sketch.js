@@ -8,26 +8,39 @@ function setup() {
 createCanvas(1000, 562); //in 16:9 aspect ratio.
 
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
-}
 
-function draw() {
 background(255);
 
-noLoop();
+}
+                   
+function draw() {
+
+
+//noLoop();
 }
 
 //drawing functions: 
-function dropInk(x, y, seed){
+function dropInk(x, y, quantity = seed){
 //change colour of wherever the ink is dropped and begin thinking about offloading. 
 
-let col = constrain(seed, 0, 255); 
+let col = constrain(quantity, 0, 255); 
 
 changeColour(pos(x,y), col, col, col); 
 
+offload(pos(x,y), quantity); 
+
 }
 
-function mousePressed(){
-dropInk(mouseX, mouseY); 
+function offload(index, ink){
+if (ink > capacity){
+//offload: 
+let neighbours = findNeighbours(index); 
+
+changeColour(neighbours, maxTransfer, maxTransfer, maxTransfer)
+
+}else{
+return
+}
 }
 
 //helper functions:
@@ -88,4 +101,8 @@ pixels[index + 3] = a;
 }
 
 updatePixels(); //update all pixels on the screen.
+}
+
+function mousePressed(){
+dropInk(mouseX, mouseY); 
 }
