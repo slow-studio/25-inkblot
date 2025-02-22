@@ -9,9 +9,9 @@ function setup() {
   createCanvas(1000, 562); //in 16:9 aspect ratio.
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
-  background(0, 255, 255);
+  background(255);
   dropInk(200, 562 / 2, seed);
-}
+}  
 
 function dropInk(x, y, quantity) {
   let col = constrain(quantity, 0, 255);
