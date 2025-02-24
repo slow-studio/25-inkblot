@@ -4,7 +4,7 @@ let seed = 1000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 function setup() {
-createCanvas(10, 5);
+createCanvas(100, 100);
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
 background(255);
