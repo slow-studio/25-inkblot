@@ -29,7 +29,7 @@ let posforseed_y = height / 2;
 //change value of the element in the paper array:
 paper[pos(posforseed_x, posforseed_y)] = seed;
 
-console.log(`paper-pixel at (${posforseed_x}, ${posforseed_y}) has ${seed} ink units dropped on it.`); //debug-comment to check how many units of ink have been dropped on which position. 
+//console.log(`paper-pixel at (${posforseed_x}, ${posforseed_y}) has ${seed} ink units dropped on it.`); //debug-comment to check how many units of ink have been dropped on which position. 
 
 //update visually: 
 loadPixels();
