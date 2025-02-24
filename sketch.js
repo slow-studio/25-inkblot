@@ -1,7 +1,7 @@
 //inkblot-base, with only math; february 2025.
 
 let seed = 1000000;
-let posforseed_x, posforseed_y;
+let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 function setup() {
 createCanvas(10, 5);
@@ -9,27 +9,33 @@ pixelDensity(1); //always treat one-pixel as one-pixel in higher density display
 
 background(255);
 
+//feed an initial value to the virtual array, so that each element corresponds to one-pixel on the screen.  
 for (let i = 0; i < width * height; ++i) {
 paper.push(0);
 }
-console.log(`set up ${paper.length} pixels on paper.`);
 
-posforseed_x = width / 2;
-posforseed_y = height / 2;
+//console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper. 
+
+dropInk(); 
+}
+
+function dropInk(){
+//drops ink on the paper and displays it on the screen. 
+
+//define position for seed: 
+let posforseed_x = width / 2;
+let posforseed_y = height / 2;
+
+//change value of the element in the paper array:
 paper[pos(posforseed_x, posforseed_y)] = seed;
-console.log(
-`paper-pixel at (${posforseed_x}, ${posforseed_y}) has ${seed} ink units dropped on it.`
-);
 
+console.log(`paper-pixel at (${posforseed_x}, ${posforseed_y}) has ${seed} ink units dropped on it.`); //debug-comment to check how many units of ink have been dropped on which position. 
+
+//update visually: 
 loadPixels();
-
 let indexofseed = pos(posforseed_x, posforseed_y);
-console.log(`paper at ${indexofseed} holds value = ${paper[indexofseed]}`);
 changeRGBA(indexofseed, paper[indexofseed]);
-
 updatePixels();
-
-console.log(getNeighbours(0));
 }
 
 function draw() {
