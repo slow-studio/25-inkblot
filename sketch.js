@@ -53,7 +53,7 @@ function draw() {
   updatePixels();
 }
 
-//drawing functions: 
+//drawing functions:
 function arjuns_blot(index) {
   const deltaChecker = 0; //required difference between cells to offload ink.
   const rate = 5; //number of ink-particles to release in one go.
@@ -92,9 +92,9 @@ function shobhans_blot(index) {
   }
 }
 
-//helper-functions: 
+//helper-functions:
 function getNeighbours(index) {
-//returns an array of neighbour-indices. 
+  //returns an array of neighbour-indices.
   let neighbours = [];
 
   //we calculate naighbours based on the x, y position and not the index (because the index is one-dimensional.
@@ -135,7 +135,7 @@ function getNeighbours(index) {
 }
 
 function pos(x, y) {
-//returns a valid index-number for a given position. 
+  //returns a valid index-number for a given position.
   let element = floor(x) + floor(y) * width;
   // console.log(`pos(${x}, ${y}) found element ${element}.`)
 
@@ -147,7 +147,7 @@ function pos(x, y) {
 }
 
 function inversePos(index) {
-//returns x & y coordinates for an index-position. 
+  //returns x & y coordinates for an index-position.
   let x = floor(index % width);
   let y = floor((index - x) / width);
 
@@ -157,7 +157,7 @@ function inversePos(index) {
 }
 
 function changeRGBA(index, a = 255) {
-//changes RGBA values for an index position, using the p5.pixels array. 
+  //changes RGBA values for an index position, using the p5.pixels array.
   index *= 4;
   pixels[index + 0] =
     pixels[index + 1] =
