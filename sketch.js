@@ -1,10 +1,10 @@
 //inkblot-base, with only math; february 2025.
 
-let seed = 1000000;
+let seed = 10000000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 function setup() {
-createCanvas(3, 3);
+createCanvas(100, 100);
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
 background(255);
@@ -40,37 +40,50 @@ updatePixels();
 }
 
 function draw() {
-// background(255);
+ background(100);
 
-noLoop(); 
-
-//for each pixel in paper, blot ink from it to its neighbours: 
-for (let i = 0; i<paper.length; i++){
-blot (i); 
+loadPixels(); 
+for (let i = 0; i < paper.length; ++i) {
+// blot ink from each pixel in paper to its neighbours:
+shobhans_blot(i);
+}
+for (let i = 0; i < paper.length; i++) {
+//display the blot:
+changeRGBA(i, paper[i]);
+}
+updatePixels();
 }
 
-// // for each pixel in paper[]
-// for (let i = 0; i < paper.length; ++i) {
-//   // blot ink from it to its neighbours
-//   blot(i);
-// }
-// for (let i = 0; i < paper.length; i++) {
-//   changeRGBA(i, paper[i]);
-// }
-// updatePixels();
-// console.log(frameRate());
+function arjuns_blot(index){
+const deltaChecker = 0; //required difference between cells to offload ink. 
+const rate = 5; //number of ink-particles to release in one go. 
+
+//first, get its neighbours: 
+let neighbours = getNeighbours(index); 
+
+for (let i = 0; i<neighbours.length; i++){
+
+if (paper[index]>paper[neighbours[i]]){
+//first, if the cell has more than neighbour, then think about offloading. 
+
+if (paper[index]-paper[neighbours[i]]>deltaChecker){
+//now, look at the delta between what the cell has and the neighbour. if it is above a threshold, then prepare to offload. 
+
+//offload: 
+paper[index] -= rate; //the cell loses. 
+paper[neighbours[i]] += rate //the neighbour gains. 
 }
 
-function blot(index){
-
-//first, get the pixel's neighbours: 
-//let neighbours = getNeighbours(4); 
+}else{
+return;
+}
 
 }
 
-/*
-function blot(index) {
-const step = 15;
+}
+
+function shobhans_blot(index) {
+const step = 10; 
 
 //first get neighbours:
 let neighbours = getNeighbours(index);
@@ -82,9 +95,7 @@ paper[neighbours[i]] += step;
 }
 }
 
-//console.log(neighbours);
 }
-*/
 
 function getNeighbours(index) {
 let neighbours = [];
@@ -125,12 +136,6 @@ neighbours.push(pos(nx, ny));
 
 return neighbours;
 }
-
-/*
-function dropInk(x, y, quantity) {
-changeRGBA(pos(x, y), quantity > 255 ? 255 : quantity);
-}
-*/
 
 function pos(x, y) {
 let element = floor(x) + floor(y) * width;
