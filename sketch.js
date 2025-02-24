@@ -2,7 +2,6 @@
 
 let seed = 1000000;
 let posforseed_x, posforseed_y;
-let paper = []; // a virtual array where each element corresponds to one pixel on the screen.
 
 function setup() {
 createCanvas(10, 5);
