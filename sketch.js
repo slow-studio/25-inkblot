@@ -118,7 +118,7 @@ let potentialNeighbours = [
 [x - 1, y]      // left. 
 ];
 
-//console.log(`neighbour positions of ${index} are ${potentialNeighbours}`); //debug comment to check potential neighbour output. 
+//console.log(`neighbour positions of ${index} are ${potentialNeighbours}`); //debug-comment to check potential neighbour output. 
 
 //filter out-of-bounds positions: 
 for (let i = 0; i < potentialNeighbours.length; i++) { 
@@ -132,7 +132,7 @@ neighbours.push(pos(nx, ny));
 }
 }
 
-//console.log(`neighbours for ${index} are indices: ${neighbours}`); //debug comment to check neighbours. 
+//console.log(`neighbours for ${index} are indices: ${neighbours}`); //debug-comment to check neighbours. 
 
 return neighbours;
 }
