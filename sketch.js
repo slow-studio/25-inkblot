@@ -4,7 +4,7 @@ let seed = 1000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 function setup() {
-createCanvas(100, 100);
+createCanvas(3, 3);
 pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
 background(255);
@@ -17,6 +17,7 @@ paper.push(0);
 //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper. 
 
 dropInk(); 
+
 }
 
 function dropInk(){
@@ -39,8 +40,15 @@ updatePixels();
 }
 
 function draw() {
-// noLoop();
 // background(255);
+
+noLoop(); 
+
+//for each pixel in paper, blot ink from it to its neighbours: 
+for (let i = 0; i<paper.length; i++){
+blot (i); 
+}
+
 // // for each pixel in paper[]
 // for (let i = 0; i < paper.length; ++i) {
 //   // blot ink from it to its neighbours
@@ -53,6 +61,14 @@ function draw() {
 // console.log(frameRate());
 }
 
+function blot(index){
+
+//first, get the pixel's neighbours: 
+//let neighbours = getNeighbours(4); 
+
+}
+
+/*
 function blot(index) {
 const step = 15;
 
@@ -68,36 +84,44 @@ paper[neighbours[i]] += step;
 
 //console.log(neighbours);
 }
+*/
 
 function getNeighbours(index) {
 let neighbours = [];
 
+//we calculate naighbours based on the x, y position and not the index (because the index is one-dimensional. 
+//so, we convert the index to x, y coordinates again:
 let indexCoordinate = inversePos(index);
-let x = indexCoordinate[0],
-y = indexCoordinate[1];
+let x = indexCoordinate[0]; 
+let y = indexCoordinate[1]; 
 
-let positions = [
-pos(x - 1, y - 1), // top-left
-pos(x, y - 1), // top
-pos(x + 1, y - 1), // top-right
-pos(x + 1, y), // right
-pos(x + 1, y + 1), // bottom-right
-pos(x, y + 1), // bottom
-pos(x - 1, y + 1), // bottom-left
-pos(x - 1, y), // left
+//list all 8 neighbour-possibilities for a position: 
+let potentialNeighbours = [
+[x - 1, y - 1], // top-left. 
+[x, y - 1],     // top. 
+[x + 1, y - 1], // top-right. 
+[x + 1, y],     // right. 
+[x + 1, y + 1], // bottom-right. 
+[x, y + 1],     // bottom. 
+[x - 1, y + 1], // bottom-left. 
+[x - 1, y]      // left. 
 ];
 
+//console.log(`neighbour positions of ${index} are ${potentialNeighbours}`); //debug comment to check potential neighbour output. 
 
-// Filter out out-of-bounds positions
-for (let i = 0; i < positions.length; i++) {
-let nx = x + [-1, 1, 0, 0, -1, 1, -1, 1][i]; // x-offsets
-let ny = y + [0, 0, -1, 1, -1, -1, 1, 1][i]; // y-offsets
+//filter out-of-bounds positions: 
+for (let i = 0; i < potentialNeighbours.length; i++) { 
+//a neighbour is out-of-bounds if it is beyond the canvas dimensions. 
+
+let nx = potentialNeighbours[i][0];
+let ny = potentialNeighbours[i][1];
 
 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-neighbours.push(positions[i]);
+neighbours.push(pos(nx, ny));
 }
 }
-console.log(positions);
+
+//console.log(`neighbours for ${index} are indices: ${neighbours}`); //debug comment to check neighbours. 
 
 return neighbours;
 }
@@ -111,7 +135,12 @@ changeRGBA(pos(x, y), quantity > 255 ? 255 : quantity);
 function pos(x, y) {
 let element = floor(x) + floor(y) * width;
 // console.log(`pos(${x}, ${y}) found element ${element}.`)
+
+if (element<=paper.length){
 return element;
+}else{
+return null
+}
 }
 
 function inversePos(index) {
