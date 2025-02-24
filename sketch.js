@@ -14,7 +14,7 @@ for (let i = 0; i < width * height; i++) {
 paper.push(0);
 }
 
-console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper. 
+//console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper. 
 
 dropInk(); 
 }
