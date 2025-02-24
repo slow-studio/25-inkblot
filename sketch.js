@@ -14,7 +14,7 @@ for (let i = 0; i < width * height; i++) {
 paper.push(0);
 }
 
-//console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper. 
+console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper. 
 
 dropInk(); 
 }
@@ -102,9 +102,11 @@ console.log(positions);
 return neighbours;
 }
 
+/*
 function dropInk(x, y, quantity) {
 changeRGBA(pos(x, y), quantity > 255 ? 255 : quantity);
 }
+*/
 
 function pos(x, y) {
 let element = floor(x) + floor(y) * width;
