@@ -1,4 +1,4 @@
-//inkblot, but only with math; february 2025.
+//inkblot-base, with only math; february 2025.
 
 let seed = 1000000;
 let posforseed_x, posforseed_y;
