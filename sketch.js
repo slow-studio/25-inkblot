@@ -44,7 +44,7 @@ function draw() {
   loadPixels();
   for (let i = 0; i < paper.length; ++i) {
     // blot ink from each pixel in paper to its neighbours:
-    shobhans_blot(i);
+    arjuns_blot(i);
   }
   for (let i = 0; i < paper.length; i++) {
     //display the blot:
@@ -62,7 +62,7 @@ function arjuns_blot(index) {
   let neighbours = getNeighbours(index);
 
   for (let i = 0; i < neighbours.length; i++) {
-    if (paper[index] > paper[neighbours[i]]) {
+    if (paper[index] > paper[neighbours[i]] + rate + 1) {
       //first, if the cell has more than neighbour, then think about offloading.
 
       if (paper[index] - paper[neighbours[i]] > deltaChecker) {
@@ -72,9 +72,7 @@ function arjuns_blot(index) {
         paper[index] -= rate; //the cell loses.
         paper[neighbours[i]] += rate; //the neighbour gains.
       }
-    } else {
-      return;
-    }
+    } 
   }
 }
 
