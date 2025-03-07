@@ -19,6 +19,7 @@ function setup() {
   dropInk();
 }
 
+//i'm going to drop ink in a circle and see if that meets my need of realism. 
 function dropInk() {
   //drops ink on the paper and displays it on the screen.
 
