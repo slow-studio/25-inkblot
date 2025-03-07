@@ -130,6 +130,8 @@ function getNeighbours(index) {
 
     if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
       neighbours.push(pos(nx, ny));
+    }else{
+      neighbours.push(null);
     }
   }
 
