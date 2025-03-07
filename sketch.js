@@ -61,25 +61,7 @@ function draw() {
 
 //drawing functions:
 function arjuns_blot(index) {
-  const deltaChecker = 0; //required difference between cells to offload ink.
-  const rate = 10; //number of ink-particles to release in one go.
 
-  //first, get its neighbours:
-  let neighbours = getNeighbours(index);
-
-  for (let i = 0; i < neighbours.length; i++) {
-    if (paper[index] > paper[neighbours[i]] + rate ) {
-      //first, if the cell has more than neighbour, then think about offloading.
-
-      if (paper[index] - paper[neighbours[i]] > deltaChecker) {
-        //now, look at the delta between what the cell has and the neighbour. if it is above a threshold, then prepare to offload.
-
-        //offload:
-        paper[index] -= rate; //the cell loses.
-        paper[neighbours[i]] += rate; //the neighbour gains.
-      }
-    } 
-  }
 }
 
 function shobhans_blot(index) {
