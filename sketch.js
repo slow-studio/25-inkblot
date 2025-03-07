@@ -1,4 +1,4 @@
-//inkblot-base, with only math; february 2025.
+//ink-blotting, with math; march, 2025.
 
 let seed = 10000000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
