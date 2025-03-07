@@ -61,7 +61,44 @@ function draw() {
 
 //drawing functions:
 function arjuns_blot(index) {
-//i want to blot in a circular fashion.
+//first you check if it has ink. if not, leave. 
+
+if (paper[index]>0){
+//if the paper has ink, it will absorb some ink. 
+const capacity = 10; 
+let inkToSpread = paper[index]-capacity; 
+
+//then it finds its neighbours. 
+
+let neighbours = getNeighbours(index);
+
+//then, it runs through all neighbours and checks what the difference between them is. 
+for (i = 0; i<neighbours.length; i++){
+
+//is there more ink?
+if (inkToSpread>paper[neighbours[i].index] + 10){
+//calculate how much to send: 
+const maxTransfer = 10; //send 10 in one go (this is rate or max-rate).
+
+//now pick the edges. 
+
+if (neighbours[i]%2==1){
+//odd (or edges)
+let toGive = Math.min(inkToSpread-paper[neighbours[i].index], maxTransfer)
+paper[index]-=toGive; 
+paper[neighbours[i]]+=toGive;
+}else{
+//even (or corners)
+let toGive = Math.min(inkToSpread-paper[neighbours[i].index], maxTransfer/2) //give less to the corners. 
+paper[index]-=toGive; 
+paper[neighbours[i]]+=toGive;
+}
+}
+}
+
+
+}
+
 }
 
 function shobhans_blot(index) {
