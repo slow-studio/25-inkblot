@@ -72,24 +72,25 @@ let inkToSpread = paper[index]-capacity;
 
 let neighbours = getNeighbours(index);
 
+const maxTransfer = 100;
+
 //then, it runs through all neighbours and checks what the difference between them is. 
 for (i = 0; i<neighbours.length; i++){
 
 //is there more ink?
-if (inkToSpread>paper[neighbours[i].index] + 10){
+if (inkToSpread>paper[neighbours[i]]+maxTransfer){
 //calculate how much to send: 
-const maxTransfer = 10; //send 10 in one go (this is rate or max-rate).
 
 //now pick the edges. 
 
 if (neighbours[i]%2==1){
 //odd (or edges)
-let toGive = Math.min(inkToSpread-paper[neighbours[i].index], maxTransfer)
+let toGive = Math.min(inkToSpread-paper[neighbours[i]], maxTransfer)
 paper[index]-=toGive; 
 paper[neighbours[i]]+=toGive;
 }else{
 //even (or corners)
-let toGive = Math.min(inkToSpread-paper[neighbours[i].index], maxTransfer/2) //give less to the corners. 
+let toGive = Math.min(inkToSpread-paper[neighbours[i]], maxTransfer/3) //give less to the corners. 
 paper[index]-=toGive; 
 paper[neighbours[i]]+=toGive;
 }
