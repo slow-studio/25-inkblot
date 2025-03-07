@@ -1,10 +1,10 @@
 //ink-blotting, with math; march, 2025.
 
-let seed = 10000000000;
+let seed = 100000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(100, 100);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
   background(255);
@@ -16,26 +16,31 @@ function setup() {
 
   //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper.
 
-  dropInk();
+  dropInk(width/2, height/2);
 }
 
 //i'm going to drop ink in a circle and see if that meets my need of realism. 
-function dropInk() {
+
+function dropInk(x, y) {
   //drops ink on the paper and displays it on the screen.
 
-  //define position for seed:
-  let posforseed_x = width / 2;
-  let posforseed_y = height / 2;
+  //get an index, and also get neighbouring indices. 
+  let centerIndex = pos(x,y);
+  let neighbours = getNeighbours(centerIndex);
 
-  //change value of the element in the paper array:
-  paper[pos(posforseed_x, posforseed_y)] = seed;
+  //change value of elements in paper-array. 
+  paper[centerIndex] = seed; 
 
-  //console.log(`paper-pixel at (${posforseed_x}, ${posforseed_y}) has ${seed} ink units dropped on it.`); //debug-comment to check how many units of ink have been dropped on which position.
+  for (i = 0; i<neighbours.length; ++i){
+  paper[neighbours[i]] = seed; 
+  }
 
   //update visually:
   loadPixels();
-  let indexofseed = pos(posforseed_x, posforseed_y);
-  changeRGBA(indexofseed, paper[indexofseed]);
+  changeRGBA(centerIndex, paper[centerIndex]);
+  for (i = 0; i<neighbours.length; ++i){
+  changeRGBA(neighbours[i], paper[neighbours[i]]);
+  }
   updatePixels();
 }
 
@@ -57,13 +62,13 @@ function draw() {
 //drawing functions:
 function arjuns_blot(index) {
   const deltaChecker = 0; //required difference between cells to offload ink.
-  const rate = 5; //number of ink-particles to release in one go.
+  const rate = 10; //number of ink-particles to release in one go.
 
   //first, get its neighbours:
   let neighbours = getNeighbours(index);
 
   for (let i = 0; i < neighbours.length; i++) {
-    if (paper[index] > paper[neighbours[i]] + rate + 1) {
+    if (paper[index] > paper[neighbours[i]] + rate ) {
       //first, if the cell has more than neighbour, then think about offloading.
 
       if (paper[index] - paper[neighbours[i]] > deltaChecker) {
