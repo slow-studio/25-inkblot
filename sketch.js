@@ -26,28 +26,21 @@ function dropInk(x, y) {
 
   //get an index, and also get neighbouring indices.
   let centerIndex = pos(x, y);
-  let neighbours = getNeighbours(centerIndex);
 
   //change value of elements in paper-array.
   paper[centerIndex] = seed;
 
-  for (i = 0; i < neighbours.length; ++i) {
-    paper[neighbours[i]] = seed;
-  }
-
   //update visually:
   loadPixels();
   changeRGBA(centerIndex, paper[centerIndex]);
-  for (i = 0; i < neighbours.length; ++i) {
-    changeRGBA(neighbours[i], paper[neighbours[i]]);
-  }
+
   updatePixels();
 }
 
 function draw() {
-  background(100);
 
   loadPixels();
+
   for (let i = 0; i < paper.length; ++i) {
     // blot ink from each pixel in paper to its neighbours:
     arjuns_blot(i);
@@ -63,10 +56,12 @@ function draw() {
 function arjuns_blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
-  const capacity = 50; //each cell can store 50 ink-particles.
+  const capacity = 255; //each cell can store 50 ink-particles.
+
+  let offload_desired = ink - capacity; 
 
   if (ink > capacity) {
-    //blot.
+    //∴ there's a desire to blot, and offload the extra ink.
 
     //we find all neighbours first.
     let neighbours = getNeighbours(index);
@@ -92,8 +87,8 @@ function arjuns_blot(index) {
     }
 
     //however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited.
-    let rate = 200;
-    let ink_to_give = Math.min(total_demand, rate) - capacity; //in one instance, don't give more than 200.
+    const rate = 400;
+    let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 200.
 
     //now, we go to each neighbour and we give it the relevant ink.
 
@@ -108,7 +103,7 @@ function arjuns_blot(index) {
 
         //give it 97% of what it can actually get.
         let to_give = 0;
-        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.97;
+        to_give = ink_to_give * (raw_differences[i] / total_demand) * 1;
 
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
@@ -117,7 +112,7 @@ function arjuns_blot(index) {
 
         //give it 54% of what it can actually get.
         let to_give = 0;
-        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.54;
+        to_give = ink_to_give * (raw_differences[i] / total_demand) * 1;
 
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
