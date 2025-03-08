@@ -16,29 +16,29 @@ paper.push(0);
 
 //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper.
 
-dropInk(width/2, height/2);
+dropInk(width / 2, height / 2);
 }
 
-//i'm going to drop ink in a circle and see if that meets my need of realism. 
+//i'm going to drop ink in a circle and see if that meets my need of realism.
 
 function dropInk(x, y) {
 //drops ink on the paper and displays it on the screen.
 
-//get an index, and also get neighbouring indices. 
-let centerIndex = pos(x,y);
+//get an index, and also get neighbouring indices.
+let centerIndex = pos(x, y);
 let neighbours = getNeighbours(centerIndex);
 
-//change value of elements in paper-array. 
-paper[centerIndex] = seed; 
+//change value of elements in paper-array.
+paper[centerIndex] = seed;
 
-for (i = 0; i<neighbours.length; ++i){
-paper[neighbours[i]] = seed; 
+for (i = 0; i < neighbours.length; ++i) {
+paper[neighbours[i]] = seed;
 }
 
 //update visually:
 loadPixels();
 changeRGBA(centerIndex, paper[centerIndex]);
-for (i = 0; i<neighbours.length; ++i){
+for (i = 0; i < neighbours.length; ++i) {
 changeRGBA(neighbours[i], paper[neighbours[i]]);
 }
 updatePixels();
@@ -61,23 +61,68 @@ updatePixels();
 
 //drawing functions:
 function arjuns_blot(index) {
-//first, we check how much we have. 
+//we check how much ink we have. 
+let ink = paper[index];
+const capacity = 50; //each cell can store 50 ink-particles. 
 
+if (ink>capacity){
+//blot. 
 
-}
-
-function shobhans_blot(index) {
-const step = 10;
-
-//first get neighbours:
+//we find all neighbours first. 
 let neighbours = getNeighbours(index);
 
+//then, we find the difference between what the cell has and its neighbours. 
+let raw_differences = []; 
+
+for (let i = 0; i<neighbours.length; i++){
+if (paper[index] > paper[neighbours[i]]) {
+//it's a positive difference, so store it as is.
+raw_differences.push(paper[index] - paper[neighbours[i]]);
+} else {
+//it's a negative difference, so keep it at zero.
+raw.differences.push(0);
+}
+}
+
+//now, see how much the demand is. 
+let total_demand = 0; 
+
+for (let i = 0; i < raw_differences.length; i++) {
+total_demand += raw_differences[i];
+}
+
+//however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited. 
+let rate = 200; 
+let ink_to_give = (Math.min(total_demand, rate)) - capacity; //in one instance, don't give more than 200. 
+
+//now, we go to each neighbour and we give it the relevant ink. 
+
 for (let i = 0; i < neighbours.length; i++) {
-if (paper[index] > paper[neighbours[i]] + step + 1) {
-paper[index] -= step;
-paper[neighbours[i]] += step;
+if (neighbours[i] == 1 || neighbours[i] == 4 || neighbours[i] == 6 || neighbours[i] == 3) {
+//edge:
+
+//give it 97% of what it can actually get. 
+let to_give = 0; 
+to_give = (ink_to_give*(raw_differences[i] / total_demand))*0.97;
+
+paper[index] -= to_give; 
+paper[neighbours[i]] += to_give; 
+} else {
+//corner:
+
+//give it 54% of what it can actually get. 
+let to_give = 0; 
+to_give = (ink_to_give*(raw_differences[i] / total_demand))*0.54;
+
+paper[index] -= to_give; 
+paper[neighbours[i]] += to_give; 
+
 }
 }
+
+
+}
+
 }
 
 //helper-functions:
