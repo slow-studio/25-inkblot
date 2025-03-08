@@ -1,11 +1,10 @@
 //ink-blotting, with math; march, 2025.
 
-let seed = 10000;
+let seed = 1000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
-let shifter = []; //a virtual array to only store the + or - values from all the drawing-processing.
 
 function setup() {
-  createCanvas(10, 10);
+  createCanvas(100, 100);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
   background(255);
@@ -13,13 +12,14 @@ function setup() {
   //feed an initial value to the virtual array, so that each element corresponds to one-pixel on the screen.
   for (let i = 0; i < width * height; i++) {
     paper.push(0);
-    shifter.push(0);
   }
 
   //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper.
 
   dropInk(width/2, height/2);
 }
+
+//i'm going to drop ink in a circle and see if that meets my need of realism.
 
 function dropInk(x, y) {
   //drops ink on the paper and displays it on the screen.
@@ -38,47 +38,86 @@ function dropInk(x, y) {
 }
 
 function draw() {
+
   loadPixels();
 
-  for (let i = 0; i < paper.length; i++) {
+  for (let i = 0; i < paper.length; ++i) {
     // blot ink from each pixel in paper to its neighbours:
     arjuns_blot(i);
   }
   for (let i = 0; i < paper.length; i++) {
     //display the blot:
-    paper[i]+=shifter[i]
-    if(paper[i]<=0) paper[i]=0
     changeRGBA(i, paper[i]);
-    shifter[i]=0;
   }
   updatePixels();
-  // console.log(`Paper: ${paper}`);
-  // console.log(`Shifter: ${shifter}`);
-
-  debugger;
-
 }
 
 //drawing functions:
 function arjuns_blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
+  const capacity = 255; //each cell can store 50 ink-particles.
 
-  //we find all neighbours first.
-  let neighbours = getNeighbours(index);
+  let offload_desired = ink - capacity; 
 
-  //then, we find the difference between what the cell has and its neighbours.
-  let raw_differences = [];
+  if (ink > capacity) {
+    //∴ there's a desire to blot, and offload the extra ink.
 
-  let diff = 20;
+    //we find all neighbours first.
+    let neighbours = getNeighbours(index);
 
-  for (let i = 0; i < neighbours.length; i++) {
-    if (paper[index] - paper[neighbours[i]] > diff ) {
-      
-        shifter[index]-=diff
-        shifter[neighbours[i]]+=diff
-      } 
-    
+    //then, we find the difference between what the cell has and its neighbours.
+    let raw_differences = [];
+
+    for (let i = 0; i < neighbours.length; i++) {
+      if (paper[index] > paper[neighbours[i]]) {
+        //it's a positive difference, so store it as is.
+        raw_differences.push(paper[index] - paper[neighbours[i]]);
+      } else {
+        //it's a negative difference, so keep it at zero.
+        raw_differences.push(0);
+      }
+    }
+
+    //now, see how much the demand is.
+    let total_demand = 0;
+
+    for (let i = 0; i < raw_differences.length; i++) {
+      total_demand += raw_differences[i];
+    }
+
+    //however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited.
+    const rate = 400;
+    let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 200.
+
+    //now, we go to each neighbour and we give it the relevant ink.
+
+    for (let i = 0; i < neighbours.length; i++) {
+      if (
+        neighbours[i] == 1 ||
+        neighbours[i] == 4 ||
+        neighbours[i] == 6 ||
+        neighbours[i] == 3
+      ) {
+        //edge:
+
+        //give it 97% of what it can actually get.
+        let to_give = 0;
+        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.97;
+
+        paper[index] -= to_give;
+        paper[neighbours[i]] += to_give;
+      } else {
+        //corner:
+
+        //give it 54% of what it can actually get.
+        let to_give = 0;
+        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.54;
+
+        paper[index] -= to_give;
+        paper[neighbours[i]] += to_give;
+      }
+    }
   }
 }
 
@@ -129,7 +168,7 @@ function pos(x, y) {
   let element = floor(x) + floor(y) * width;
   // console.log(`pos(${x}, ${y}) found element ${element}.`)
 
-  if (element < paper.length) {
+  if (element <= paper.length) {
     return element;
   } else {
     return null;
@@ -148,13 +187,10 @@ function inversePos(index) {
 
 function changeRGBA(index, a = 255) {
   //changes RGBA values for an index position, using the p5.pixels array.
-  // a = constrain(a, 0, 255);
   index *= 4;
   pixels[index + 0] =
     pixels[index + 1] =
     pixels[index + 2] =
-      a < 0 ? 255 : a > 255 ? 0 : 255 - a;
-          // 255 - a;
+      a > 255 ? 0 : 255 - a;
   pixels[index + 3] = 255;
-  
 }
