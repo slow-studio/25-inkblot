@@ -103,7 +103,7 @@ function arjuns_blot(index) {
 
         //give it 97% of what it can actually get.
         let to_give = 0;
-        to_give = ink_to_give * (raw_differences[i] / total_demand) * 1;
+        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.97;
 
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
@@ -112,7 +112,7 @@ function arjuns_blot(index) {
 
         //give it 54% of what it can actually get.
         let to_give = 0;
-        to_give = ink_to_give * (raw_differences[i] / total_demand) * 1;
+        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.54;
 
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
