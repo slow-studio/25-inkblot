@@ -1,6 +1,6 @@
 //ink-blotting, with math; march, 2025.
 
-let seed = 100000;
+let seed = 1000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 function setup() {
@@ -16,7 +16,7 @@ function setup() {
 
   //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper.
 
-  dropInk(width / 2, height / 2);
+  dropInk(width/2, height/2);
 }
 
 //i'm going to drop ink in a circle and see if that meets my need of realism.
@@ -80,7 +80,7 @@ function arjuns_blot(index) {
         raw_differences.push(paper[index] - paper[neighbours[i]]);
       } else {
         //it's a negative difference, so keep it at zero.
-        raw.differences.push(0);
+        raw_differences.push(0);
       }
     }
 
