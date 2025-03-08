@@ -1,10 +1,10 @@
 //ink-blotting, with math; march, 2025.
 
-let seed = 1000000;
+let seed = 5000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 function setup() {
-  createCanvas(100, 100);
+  createCanvas(400, 400);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
   background(255);
@@ -16,7 +16,9 @@ function setup() {
 
   //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper.
 
-  dropInk(width/2, height/2);
+  dropInk(width / 2, height / 2);
+  dropInk(width / 1.8, height / 1.8);
+  dropInk(width / 3, height / 1.8);
 }
 
 //i'm going to drop ink in a circle and see if that meets my need of realism.
@@ -28,7 +30,7 @@ function dropInk(x, y) {
   let centerIndex = pos(x, y);
 
   //change value of elements in paper-array.
-  paper[centerIndex] = seed;
+  paper[centerIndex] = seed/3;
 
   //update visually:
   loadPixels();
@@ -38,7 +40,6 @@ function dropInk(x, y) {
 }
 
 function draw() {
-
   loadPixels();
 
   for (let i = 0; i < paper.length; ++i) {
@@ -56,15 +57,15 @@ function draw() {
 function arjuns_blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
-  const capacity = 255; //each cell can store 50 ink-particles.
+  const capacity = 255; //fixed capacity of 255 for each cell.
 
-  let offload_desired = ink - capacity; 
+  let offload_desired = ink - capacity;
 
-  if (ink > capacity) {
-    //∴ there's a desire to blot, and offload the extra ink.
+  //we find all neighbours first.
+  let neighbours = getNeighbours(index);
 
-    //we find all neighbours first.
-    let neighbours = getNeighbours(index);
+  if (ink > capacity ) {
+    //∴ there's a desire to offload, and offload the extra ink.
 
     //then, we find the difference between what the cell has and its neighbours.
     let raw_differences = [];
@@ -87,18 +88,13 @@ function arjuns_blot(index) {
     }
 
     //however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited.
-    const rate = 400;
+    const rate = 40000;
     let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 200.
 
     //now, we go to each neighbour and we give it the relevant ink.
 
     for (let i = 0; i < neighbours.length; i++) {
-      if (
-        neighbours[i] == 1 ||
-        neighbours[i] == 4 ||
-        neighbours[i] == 6 ||
-        neighbours[i] == 3
-      ) {
+      if ([i] == 1 || [i] == 4 || [i] == 6 || [i] == 3) {
         //edge:
 
         //give it 97% of what it can actually get.
@@ -117,6 +113,14 @@ function arjuns_blot(index) {
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
       }
+    }
+  } 
+  
+  for (let i = 0; i < neighbours.length; i++) {
+    if (paper[index] > paper[neighbours[i]]+paper[index]/16&& paper[index] / paper[neighbours[i]] > 1.1) {
+      
+      paper[index] -= 1;
+      paper[neighbours[i]] += 1;
     }
   }
 }
@@ -187,10 +191,8 @@ function inversePos(index) {
 
 function changeRGBA(index, a = 255) {
   //changes RGBA values for an index position, using the p5.pixels array.
+  a = constrain(a, 0, 255);
   index *= 4;
-  pixels[index + 0] =
-    pixels[index + 1] =
-    pixels[index + 2] =
-      a > 255 ? 0 : 255 - a;
+  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - a;
   pixels[index + 3] = 255;
 }
