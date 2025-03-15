@@ -2,6 +2,7 @@
 //contributors: arjun, shobhan & vivek.
 
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
+let neighbours = {}; //an object that stores the neighbours for each index. 
 
 let min_seed = 1000000; // minimum seed that has to be dropped.
 let max_seed = 1000000000; //maximum seed that can be dropped.
