@@ -2,7 +2,7 @@
 //contributors: arjun, shobhan & vivek.
 
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
-let neighbours = {}; //an object that stores the neighbours for each index.
+let all_neighbours = {}; //an object that stores the neighbours for each index.
 
 let min_seed = 1000000; // minimum seed that has to be dropped.
 let max_seed = 1000000000; //maximum seed that can be dropped.
@@ -22,11 +22,10 @@ function setup() {
   }
 
   for (let i = 0; i < paper.length; i++) {
-    neighbours[i] = get_neighbours(i);
+    all_neighbours[i] = get_neighbours(i);
   }
 
   drop_ink(width / 2, height / 2, int(random(min_seed, max_seed)));
-  noLoop();
 }
 
 /**
@@ -64,6 +63,8 @@ function draw() {
     change_rgba(i, paper[i]);
   }
   updatePixels();
+
+  // console.log(frameRate());
 }
 
 /**
@@ -79,7 +80,7 @@ function blot(index) {
   let offload_desired = ink - capacity; //this is how much the cell wants to give.
 
   //we find all neighbours first.
-  let neighbours = get_neighbours(index);
+  let neighbours = all_neighbours[index];
 
   if (ink > capacity) {
     //∴ there's a desire to offload. so, we offload the ink.
