@@ -10,8 +10,6 @@ function setup() {
   createCanvas(400, 400);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
-  background(255);
-
   //feed an initial value to the virtual array, so that each element corresponds to one-pixel on the screen.
   for (let i = 0; i < width * height; i++) {
     paper.push(0);
