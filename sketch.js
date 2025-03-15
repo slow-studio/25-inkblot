@@ -2,7 +2,7 @@
 //contributors: arjun, shobhan & vivek.
 
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
-let neighbours = {}; //an object that stores the neighbours for each index. 
+let neighbours = {}; //an object that stores the neighbours for each index.
 
 let min_seed = 1000000; // minimum seed that has to be dropped.
 let max_seed = 1000000000; //maximum seed that can be dropped.
@@ -21,7 +21,12 @@ function setup() {
     paper.push(0);
   }
 
+  for (let i = 0; i < paper.length; i++) {
+    neighbours[i] = get_neighbours(i);
+  }
+
   drop_ink(width / 2, height / 2, int(random(min_seed, max_seed)));
+  noLoop();
 }
 
 /**
@@ -66,7 +71,7 @@ function draw() {
  * @param {int} index — the index of the paper array to perform the blotting on.
  */
 const capacity = 255; //there is a fixed capacity of 255 for each cell.
-    const rate = 40000; //rate at which ink is spread. 
+const rate = 40000; //rate at which ink is spread.
 function blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
