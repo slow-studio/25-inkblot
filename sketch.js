@@ -4,7 +4,7 @@
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 let all_neighbours = {}; //an object that stores the neighbours for each index.
 
-let og_seed = 2000;
+let og_seed = 200;
 let min_seed = og_seed; // minimum seed that has to be dropped.
 let max_seed = og_seed * 10; //maximum seed that can be dropped.
 
@@ -18,7 +18,7 @@ let textToPoints = []; //array to convert text-to-points.
  * @setup
  */
 function setup() {
-  createCanvas(830, 1170);
+  createCanvas(640, 640);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
   loadPixels();
 
@@ -37,20 +37,17 @@ function setup() {
 function drawText() {
   rectMode(CENTER);
   fill(255);
+  textLeading(32*1.3); 
   textToPoints = convertLetterToPoints(
-    `124 \n\
-        \n\
-        The \n\
-        a\n\
-`,
-    width / 2,
+    "if what i write \n means nothing \nto anyone,\n why should i \n write anything \nat all?",
+    width / 2+196,
     height / 2,
     width,
     height,
     1,
-    64,
+    32,
     "Arial",
-    CENTER,
+    LEFT,
     CENTER
   );
 
@@ -97,6 +94,7 @@ function draw() {
     // blot ink from each pixel in paper to its neighbours:
     blot(i);
     change_rgba(i, paper[i]);
+    check(i)
   }
   updatePixels();
 
@@ -104,6 +102,7 @@ function draw() {
   // let frl = fr.length
   // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
   //   debugger;
+save('#.png')
 }
 
 /**
@@ -143,7 +142,7 @@ function blot(index) {
     }
 
     //however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited.
-    let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 200.
+    let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 'rate'.
 
     //now, we go to each neighbour and we give it the relevant ink.
 
@@ -169,7 +168,7 @@ function blot(index) {
       }
     }
   }
-
+  // let donate = map(paper[index], 0, 255, 1, 1);
   for (let i = 0; i < neighbours.length; i++) {
     if (
       paper[index] > paper[neighbours[i]] + paper[index] / 16 &&
@@ -179,6 +178,11 @@ function blot(index) {
       paper[neighbours[i]] += 1;
     }
   }
+}
+
+// fix for randomly appearing NaN values
+function check(index) {
+  if(!paper[index] && paper[index]!=0) paper[index]=0; 
 }
 
 /**
@@ -276,3 +280,9 @@ function change_rgba(index, c = 255) {
   pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c;
   pixels[index + 3] = 255;
 }
+
+function mousePressed(){
+let index = pos(mouseX, mouseY);
+console.log(paper[index]); 
+}
+
