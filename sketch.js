@@ -36,6 +36,12 @@ function setup() {
 
 function drawText(){
 textToPoints = convertLetterToPoints("a", width/2, height/2, width, height, 5, 100, "Arial", CENTER, CENTER);
+
+for (let i = 0; i<textToPoints.length; i++){
+//drop ink on each of these. 
+
+drop_ink(textToPoints[i].x, textToPoints[i].y, int(random(min_seed, max_seed)));
+}
 }
 
 /**
@@ -68,7 +74,7 @@ let fr = [];
 function draw() {
   for (let i = 0; i < paper.length; i++) {
     // blot ink from each pixel in paper to its neighbours:
-    blot(i);
+    //blot(i);
     change_rgba(i, paper[i]);
   }
   updatePixels();
