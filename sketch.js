@@ -35,7 +35,7 @@ function setup() {
 }
 
 function drawText(){
-textToPoints = convertLetterToPoints("a", width/2, height/2, width, height, 5, 100, font, CENTER, CENTER);
+textToPoints = convertLetterToPoints("a", width/2, height/2, width, height, 5, 100, "Arial", CENTER, CENTER);
 }
 
 /**
@@ -78,7 +78,6 @@ function draw() {
   // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
   //   debugger;
 
-  console.log(`${frameCount} and ${frameRate()}`);
 }
 
 /**
