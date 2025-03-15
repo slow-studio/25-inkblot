@@ -54,7 +54,7 @@ function draw() {
 
   for (let i = 0; i < paper.length; ++i) {
     // blot ink from each pixel in paper to its neighbours:
-    arjuns_blot(i);
+    blot(i);
   }
   for (let i = 0; i < paper.length; i++) {
     //display the blot:
@@ -67,7 +67,7 @@ function draw() {
  * blotting function.
  * @param {int} index — the index of the paper array to perform the blotting on.
  */
-function arjuns_blot(index) {
+function blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
   const capacity = 255; //there is a fixed capacity of 255 for each cell.
