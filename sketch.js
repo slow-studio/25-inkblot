@@ -4,15 +4,19 @@
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 let all_neighbours = {}; //an object that stores the neighbours for each index.
 
-let min_seed = 1000000; // minimum seed that has to be dropped.
-let max_seed = 1000000000; //maximum seed that can be dropped.
+let og_seed = 100000; 
+let min_seed = og_seed; // minimum seed that has to be dropped.
+let max_seed = og_seed*100; //maximum seed that can be dropped.
+
+const capacity = 255; //there is a fixed capacity of 255 for each cell.
+const rate = 2000; //rate at which ink is spread.
 
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
  * @setup
  */
 function setup() {
-  createCanvas(200, 200);
+  createCanvas(400, 400);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
   loadPixels();
 
@@ -75,8 +79,6 @@ function draw() {
  * blotting function.
  * @param {int} index — the index of the paper array to perform the blotting on.
  */
-const capacity = 255; //there is a fixed capacity of 255 for each cell.
-const rate = 40000; //rate at which ink is spread.
 function blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
@@ -146,6 +148,7 @@ function blot(index) {
       paper[neighbours[i]] += 1;
     }
   }
+
 }
 
 /**
