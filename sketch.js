@@ -64,10 +64,10 @@ function draw() {
  * blotting function.
  * @param {int} index — the index of the paper array to perform the blotting on.
  */
+const capacity = 255; //there is a fixed capacity of 255 for each cell.
 function blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
-  const capacity = 255; //there is a fixed capacity of 255 for each cell.
 
   let offload_desired = ink - capacity; //this is how much the cell wants to give.
 
