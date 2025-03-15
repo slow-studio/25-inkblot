@@ -48,23 +48,27 @@ function drop_ink(x, y, seed) {
   change_rgba(centerIndex, paper[centerIndex]);
 }
 
+let fr = []
+
 /**
  * draws on the screen, every frame (typically 60 frames / second). default p5 function.
  * loads pixels, performs the computation and updates the pixels.
  * @draw
  */
 function draw() {
-  for (let i = 0; i < paper.length; ++i) {
+  for (let i = 0; i < paper.length; i++) {
     // blot ink from each pixel in paper to its neighbours:
     blot(i);
-  }
-  for (let i = 0; i < paper.length; i++) {
-    //display the blot:
     change_rgba(i, paper[i]);
   }
   updatePixels();
 
-  // console.log(frameRate());
+  // fr.push(frameRate())
+  // let frl = fr.length 
+  // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
+  //   debugger;
+  
+  console.log(`${frameCount} and ${frameRate()}`);
 }
 
 /**
