@@ -12,7 +12,7 @@ let max_seed = 1000000000; //maximum seed that can be dropped.
  * @setup
  */
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(200, 200);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
   loadPixels();
 
@@ -48,7 +48,7 @@ function drop_ink(x, y, seed) {
   change_rgba(centerIndex, paper[centerIndex]);
 }
 
-let fr = []
+let fr = [];
 
 /**
  * draws on the screen, every frame (typically 60 frames / second). default p5 function.
@@ -64,10 +64,10 @@ function draw() {
   updatePixels();
 
   // fr.push(frameRate())
-  // let frl = fr.length 
+  // let frl = fr.length
   // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
   //   debugger;
-  
+
   console.log(`${frameCount} and ${frameRate()}`);
 }
 
