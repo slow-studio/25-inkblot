@@ -11,6 +11,8 @@ let max_seed = og_seed*100; //maximum seed that can be dropped.
 const capacity = 255; //there is a fixed capacity of 255 for each cell.
 const rate = 4000; //rate at which ink is spread.
 
+let textToPoints = []; //array to convert text-to-points. 
+
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
  * @setup
@@ -29,7 +31,11 @@ function setup() {
     all_neighbours[i] = get_neighbours(i);
   }
 
-  drop_ink(width / 2, height / 2, int(random(min_seed, max_seed)));
+  drawText();
+}
+
+function drawText(){
+textToPoints = convertLetterToPoints("a", width/2, height/2, width, height, 5, 100, font, CENTER, CENTER);
 }
 
 /**
