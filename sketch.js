@@ -10,12 +10,10 @@ function setup() {
   createCanvas(400, 400);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
 
-  //feed an initial value to the virtual array, so that each element corresponds to one-pixel on the screen.
+  //feed an initial value of 0 to the virtual array, so that each element corresponds to one-pixel on the screen and it draws a white screen.
   for (let i = 0; i < width * height; i++) {
     paper.push(0);
   }
-
-  //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper.
 
   dropInk(width / 2, height / 2, int(random(min_seed, max_seed)));
 }
