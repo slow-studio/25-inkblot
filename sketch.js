@@ -65,6 +65,7 @@ function draw() {
  * @param {int} index — the index of the paper array to perform the blotting on.
  */
 const capacity = 255; //there is a fixed capacity of 255 for each cell.
+    const rate = 40000; //rate at which ink is spread. 
 function blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
@@ -98,7 +99,6 @@ function blot(index) {
     }
 
     //however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited.
-    const rate = 40000;
     let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 200.
 
     //now, we go to each neighbour and we give it the relevant ink.
