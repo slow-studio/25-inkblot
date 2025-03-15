@@ -2,6 +2,7 @@
 //contributors: arjun & shobhan. 
 
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
+
 let min_seed = 1000; // minimum seed that has to be dropped. 
 let max_seed = 1000000; //maximum seed that can be dropped. 
 
