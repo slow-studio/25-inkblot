@@ -18,8 +18,6 @@ function setup() {
   dropInk(width / 2, height / 2, int(random(min_seed, max_seed)));
 }
 
-//i'm going to drop ink in a circle and see if that meets my need of realism.
-
 function dropInk(x, y, seed) {
   //drops ink on the paper and displays it on the screen.
 
