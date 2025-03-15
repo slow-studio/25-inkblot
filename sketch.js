@@ -1,11 +1,15 @@
 //ink-blotting, with math; march, 2024.
-//contributors: arjun & shobhan.
+//contributors: arjun, shobhan & vivek.
 
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
 let min_seed = 1000; // minimum seed that has to be dropped.
 let max_seed = 1000000; //maximum seed that can be dropped.
 
+/**
+ * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
+ * @setup
+ */
 function setup() {
   createCanvas(400, 400);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
@@ -15,10 +19,17 @@ function setup() {
     paper.push(0);
   }
 
-  dropInk(width / 2, height / 2, int(random(min_seed, max_seed)));
+  drop_ink(width / 2, height / 2, int(random(min_seed, max_seed)));
 }
 
-function dropInk(x, y, seed) {
+/**
+ * drops ink on a position.
+ * @helper
+ * @param {int} x — x coordinate of the ink.
+ * @param {int} y — y coordinate of the ink.
+ * @param {int} seed — amount of ink dropped.
+ */
+function drop_ink(x, y, seed) {
   //drops ink on the paper and displays it on the screen.
 
   //get the index of the fed-in position.
@@ -29,10 +40,15 @@ function dropInk(x, y, seed) {
 
   //update visually:
   loadPixels();
-  changeRGBA(centerIndex, paper[centerIndex]);
+  change_rgba(centerIndex, paper[centerIndex]);
   updatePixels();
 }
 
+/**
+ * draws on the screen, every frame (typically 60 frames / second). default p5 function. 
+ * loads pixels, performs the computation and updates the pixels.
+ * @draw
+ */
 function draw() {
   loadPixels();
 
@@ -42,12 +58,15 @@ function draw() {
   }
   for (let i = 0; i < paper.length; i++) {
     //display the blot:
-    changeRGBA(i, paper[i]);
+    change_rgba(i, paper[i]);
   }
   updatePixels();
 }
 
-//drawing functions:
+/**
+ * blotting function.
+ * @param {int} index — the index of the paper array to perform the blotting on.
+ */
 function arjuns_blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
@@ -56,7 +75,7 @@ function arjuns_blot(index) {
   let offload_desired = ink - capacity;
 
   //we find all neighbours first.
-  let neighbours = getNeighbours(index);
+  let neighbours = get_neighbours(index);
 
   if (ink > capacity) {
     //∴ there's a desire to offload, and offload the extra ink.
@@ -121,8 +140,13 @@ function arjuns_blot(index) {
   }
 }
 
-//helper-functions:
-function getNeighbours(index) {
+/**
+ * finds neighbour-pixels for an index.
+ * @helper
+ * @param {index} index
+ * @returns an array of neighbour-indices.
+ */
+function get_neighbours(index) {
   //returns an array of neighbour-indices.
   let neighbours = [];
 
@@ -163,6 +187,13 @@ function getNeighbours(index) {
   return neighbours;
 }
 
+/**
+ * finds the index-number in the paper array for a position on the screen.
+* @helper
+ * @param {int} x — x-coordinate on the screen.
+ * @param {*} y — y-coordinate on the screen. 
+ * @returns the index number in the paper array. 
+ */
 function pos(x, y) {
   //returns a valid index-number for a given position.
   let element = floor(x) + floor(y) * width;
@@ -175,6 +206,12 @@ function pos(x, y) {
   }
 }
 
+/**
+ * finds the x & y coordinate for an index-number in the paper array. 
+* @helper
+ * @param {int} index — index-number from the paper array. 
+ * @returns the x & y coordinate on the screen. 
+ */
 function inversePos(index) {
   //returns x & y coordinates for an index-position.
   let x = floor(index % width);
@@ -185,10 +222,16 @@ function inversePos(index) {
   return [x, y];
 }
 
-function changeRGBA(index, a = 255) {
+/**
+ * changes rgba values in the p5.pixels array. 
+* @helper
+ * @param {int} index — index-number from the paper array. 
+ * @param {float} c — rgb value.
+ */
+function change_rgba(index, c = 255) {
   //changes RGBA values for an index position, using the p5.pixels array.
-  a = constrain(a, 0, 255);
+  c = constrain(c, 0, 255);
   index *= 4;
-  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - a;
+  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c;
   pixels[index + 3] = 255;
 }
