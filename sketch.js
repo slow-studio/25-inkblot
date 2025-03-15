@@ -9,7 +9,7 @@ let min_seed = og_seed; // minimum seed that has to be dropped.
 let max_seed = og_seed*100; //maximum seed that can be dropped.
 
 const capacity = 255; //there is a fixed capacity of 255 for each cell.
-const rate = 2000; //rate at which ink is spread.
+const rate = 4000; //rate at which ink is spread.
 
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
