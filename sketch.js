@@ -37,10 +37,10 @@ function setup() {
 function drawText() {
   rectMode(CENTER);
   fill(255);
-  textLeading(32*1.3); 
+  textLeading(32 * 1.3);
   textToPoints = convertLetterToPoints(
     "if what i write \n means nothing \nto anyone,\n why should i \n write anything \nat all?",
-    width / 2+196,
+    width / 2 + 196,
     height / 2,
     width,
     height,
@@ -94,7 +94,7 @@ function draw() {
     // blot ink from each pixel in paper to its neighbours:
     blot(i);
     change_rgba(i, paper[i]);
-    check(i)
+    check(i);
   }
   updatePixels();
 
@@ -102,7 +102,7 @@ function draw() {
   // let frl = fr.length
   // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
   //   debugger;
-save('#.png')
+  // save('#.png')
 }
 
 /**
@@ -182,7 +182,7 @@ function blot(index) {
 
 // fix for randomly appearing NaN values
 function check(index) {
-  if(!paper[index] && paper[index]!=0) paper[index]=0; 
+  if (!paper[index] && paper[index] != 0) paper[index] = 0;
 }
 
 /**
@@ -280,9 +280,3 @@ function change_rgba(index, c = 255) {
   pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c;
   pixels[index + 3] = 255;
 }
-
-function mousePressed(){
-let index = pos(mouseX, mouseY);
-console.log(paper[index]); 
-}
-
