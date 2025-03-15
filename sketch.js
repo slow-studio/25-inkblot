@@ -45,7 +45,7 @@ function drop_ink(x, y, seed) {
 }
 
 /**
- * draws on the screen, every frame (typically 60 frames / second). default p5 function. 
+ * draws on the screen, every frame (typically 60 frames / second). default p5 function.
  * loads pixels, performs the computation and updates the pixels.
  * @draw
  */
@@ -189,10 +189,10 @@ function get_neighbours(index) {
 
 /**
  * finds the index-number in the paper array for a position on the screen.
-* @helper
+ * @helper
  * @param {int} x — x-coordinate on the screen.
- * @param {*} y — y-coordinate on the screen. 
- * @returns the index number in the paper array. 
+ * @param {*} y — y-coordinate on the screen.
+ * @returns the index number in the paper array.
  */
 function pos(x, y) {
   //returns a valid index-number for a given position.
@@ -207,10 +207,10 @@ function pos(x, y) {
 }
 
 /**
- * finds the x & y coordinate for an index-number in the paper array. 
-* @helper
- * @param {int} index — index-number from the paper array. 
- * @returns the x & y coordinate on the screen. 
+ * finds the x & y coordinate for an index-number in the paper array.
+ * @helper
+ * @param {int} index — index-number from the paper array.
+ * @returns the x & y coordinate on the screen.
  */
 function inversePos(index) {
   //returns x & y coordinates for an index-position.
@@ -223,9 +223,9 @@ function inversePos(index) {
 }
 
 /**
- * changes rgba values in the p5.pixels array. 
-* @helper
- * @param {int} index — index-number from the paper array. 
+ * changes rgba values in the p5.pixels array.
+ * @helper
+ * @param {int} index — index-number from the paper array.
  * @param {float} c — rgb value.
  */
 function change_rgba(index, c = 255) {
