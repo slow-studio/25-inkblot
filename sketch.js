@@ -1,8 +1,9 @@
 //ink-blotting, with math; march, 2024. 
 //contributors: arjun & shobhan. 
 
-let seed = 5000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
+let min_seed = 1000; // minimum seed that has to be dropped. 
+let max_seed = 1000000; //maximum seed that can be dropped. 
 
 function setup() {
   createCanvas(400, 400);
@@ -17,26 +18,23 @@ function setup() {
 
   //console.log(`set up ${paper.length} pixels on paper.`); //debug-comment to check how many items get created in paper.
 
-  dropInk(width / 2, height / 2);
-  dropInk(width / 1.8, height / 1.8);
-  dropInk(width / 3, height / 1.8);
+  dropInk(width / 2, height / 2, int(random(min_seed, max_seed)));
 }
 
 //i'm going to drop ink in a circle and see if that meets my need of realism.
 
-function dropInk(x, y) {
+function dropInk(x, y, seed) {
   //drops ink on the paper and displays it on the screen.
 
-  //get an index, and also get neighbouring indices.
+  //get the index of the fed-in position. 
   let centerIndex = pos(x, y);
 
   //change value of elements in paper-array.
-  paper[centerIndex] = seed/3;
+  paper[centerIndex] = seed;
 
   //update visually:
   loadPixels();
   changeRGBA(centerIndex, paper[centerIndex]);
-
   updatePixels();
 }
 
