@@ -50,7 +50,6 @@ function drop_ink(x, y, seed) {
  * @draw
  */
 function draw() {
-  loadPixels();
 
   for (let i = 0; i < paper.length; ++i) {
     // blot ink from each pixel in paper to its neighbours:
