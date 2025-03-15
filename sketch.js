@@ -1,10 +1,10 @@
-//ink-blotting, with math; march, 2024. 
-//contributors: arjun & shobhan. 
+//ink-blotting, with math; march, 2024.
+//contributors: arjun & shobhan.
 
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
-let min_seed = 1000; // minimum seed that has to be dropped. 
-let max_seed = 1000000; //maximum seed that can be dropped. 
+let min_seed = 1000; // minimum seed that has to be dropped.
+let max_seed = 1000000; //maximum seed that can be dropped.
 
 function setup() {
   createCanvas(400, 400);
@@ -27,7 +27,7 @@ function setup() {
 function dropInk(x, y, seed) {
   //drops ink on the paper and displays it on the screen.
 
-  //get the index of the fed-in position. 
+  //get the index of the fed-in position.
   let centerIndex = pos(x, y);
 
   //change value of elements in paper-array.
@@ -64,7 +64,7 @@ function arjuns_blot(index) {
   //we find all neighbours first.
   let neighbours = getNeighbours(index);
 
-  if (ink > capacity ) {
+  if (ink > capacity) {
     //∴ there's a desire to offload, and offload the extra ink.
 
     //then, we find the difference between what the cell has and its neighbours.
@@ -114,11 +114,13 @@ function arjuns_blot(index) {
         paper[neighbours[i]] += to_give;
       }
     }
-  } 
-  
+  }
+
   for (let i = 0; i < neighbours.length; i++) {
-    if (paper[index] > paper[neighbours[i]]+paper[index]/16&& paper[index] / paper[neighbours[i]] > 1.1) {
-      
+    if (
+      paper[index] > paper[neighbours[i]] + paper[index] / 16 &&
+      paper[index] / paper[neighbours[i]] > 1.1
+    ) {
       paper[index] -= 1;
       paper[neighbours[i]] += 1;
     }
