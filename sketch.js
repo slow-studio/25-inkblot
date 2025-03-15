@@ -4,21 +4,21 @@
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 let all_neighbours = {}; //an object that stores the neighbours for each index.
 
-let og_seed = 100000; 
+let og_seed = 2000;
 let min_seed = og_seed; // minimum seed that has to be dropped.
-let max_seed = og_seed*100; //maximum seed that can be dropped.
+let max_seed = og_seed * 10; //maximum seed that can be dropped.
 
 const capacity = 255; //there is a fixed capacity of 255 for each cell.
-const rate = 2000; //rate at which ink is spread.
+const rate = 200; //rate at which ink is spread.
 
-let textToPoints = []; //array to convert text-to-points. 
+let textToPoints = []; //array to convert text-to-points.
 
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
  * @setup
  */
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(830, 1170);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
   loadPixels();
 
@@ -34,16 +34,35 @@ function setup() {
   drawText();
 }
 
-function drawText(){
-rectMode (CENTER);
-fill (255);
-textToPoints = convertLetterToPoints("a", width/2, height/2, width, height, 1, 200, "Arial", CENTER, CENTER);
+function drawText() {
+  rectMode(CENTER);
+  fill(255);
+  textToPoints = convertLetterToPoints(
+    `124 \n\
+        \n\
+        The \n\
+        a\n\
+`,
+    width / 2,
+    height / 2,
+    width,
+    height,
+    1,
+    64,
+    "Arial",
+    CENTER,
+    CENTER
+  );
 
-for (let i = 0; i<textToPoints.length; i++){
-//drop ink on each of these. 
+  for (let i = 0; i < textToPoints.length; i++) {
+    //drop ink on each of these.
 
-drop_ink(textToPoints[i].x, textToPoints[i].y, int(random(min_seed, max_seed)));
-}
+    drop_ink(
+      textToPoints[i].x,
+      textToPoints[i].y,
+      int(random(min_seed, max_seed))
+    );
+  }
 }
 
 /**
@@ -85,7 +104,6 @@ function draw() {
   // let frl = fr.length
   // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
   //   debugger;
-
 }
 
 /**
@@ -161,7 +179,6 @@ function blot(index) {
       paper[neighbours[i]] += 1;
     }
   }
-
 }
 
 /**
