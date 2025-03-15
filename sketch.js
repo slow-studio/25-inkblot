@@ -70,15 +70,15 @@ function draw() {
 function arjuns_blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
-  const capacity = 255; //fixed capacity of 255 for each cell.
+  const capacity = 255; //there is a fixed capacity of 255 for each cell.
 
-  let offload_desired = ink - capacity;
+  let offload_desired = ink - capacity; //this is how much the cell wants to give.
 
   //we find all neighbours first.
   let neighbours = get_neighbours(index);
 
   if (ink > capacity) {
-    //∴ there's a desire to offload, and offload the extra ink.
+    //∴ there's a desire to offload. so, we offload the ink.
 
     //then, we find the difference between what the cell has and its neighbours.
     let raw_differences = [];
@@ -88,12 +88,12 @@ function arjuns_blot(index) {
         //it's a positive difference, so store it as is.
         raw_differences.push(paper[index] - paper[neighbours[i]]);
       } else {
-        //it's a negative difference, so keep it at zero.
+        //it's a negative difference, so store zero. 
         raw_differences.push(0);
       }
     }
 
-    //now, see how much the demand is.
+    //now, see how much the total demand is, by adding all the differences. 
     let total_demand = 0;
 
     for (let i = 0; i < raw_differences.length; i++) {
@@ -108,18 +108,18 @@ function arjuns_blot(index) {
 
     for (let i = 0; i < neighbours.length; i++) {
       if ([i] == 1 || [i] == 4 || [i] == 6 || [i] == 3) {
-        //edge:
+        //this is an edge cell. 
 
-        //give it 97% of what it can actually get.
+        //so, give it 97% of what it can actually get.
         let to_give = 0;
         to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.97;
 
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
       } else {
-        //corner:
+        //this is a corner cell. 
 
-        //give it 54% of what it can actually get.
+        //so, give it 54% of what it can actually get.
         let to_give = 0;
         to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.54;
 
