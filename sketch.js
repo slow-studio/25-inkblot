@@ -9,7 +9,7 @@ let min_seed = og_seed; // minimum seed that has to be dropped.
 let max_seed = og_seed*100; //maximum seed that can be dropped.
 
 const capacity = 255; //there is a fixed capacity of 255 for each cell.
-const rate = 4000; //rate at which ink is spread.
+const rate = 2000; //rate at which ink is spread.
 
 let textToPoints = []; //array to convert text-to-points. 
 
@@ -35,7 +35,9 @@ function setup() {
 }
 
 function drawText(){
-textToPoints = convertLetterToPoints("a", width/2, height/2, width, height, 5, 100, "Arial", CENTER, CENTER);
+rectMode (CENTER);
+fill (255);
+textToPoints = convertLetterToPoints("a", width/2, height/2, width, height, 1, 200, "Arial", CENTER, CENTER);
 
 for (let i = 0; i<textToPoints.length; i++){
 //drop ink on each of these. 
@@ -74,7 +76,7 @@ let fr = [];
 function draw() {
   for (let i = 0; i < paper.length; i++) {
     // blot ink from each pixel in paper to its neighbours:
-    //blot(i);
+    blot(i);
     change_rgba(i, paper[i]);
   }
   updatePixels();
