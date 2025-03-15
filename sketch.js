@@ -3,8 +3,8 @@
 
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 
-let min_seed = 1000; // minimum seed that has to be dropped.
-let max_seed = 1000000; //maximum seed that can be dropped.
+let min_seed = 1000000; // minimum seed that has to be dropped.
+let max_seed = 1000000000; //maximum seed that can be dropped.
 
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
