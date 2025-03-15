@@ -1,4 +1,5 @@
-//ink-blotting, with math; march, 2025.
+//ink-blotting, with math; march, 2024. 
+//contributors: arjun & shobhan. 
 
 let seed = 5000000;
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
