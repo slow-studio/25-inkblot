@@ -13,6 +13,7 @@ let max_seed = 1000000000; //maximum seed that can be dropped.
 function setup() {
   createCanvas(400, 400);
   pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
+  loadPixels();
 
   //feed an initial value of 0 to the virtual array, so that each element corresponds to one-pixel on the screen and it draws a white screen.
   for (let i = 0; i < width * height; i++) {
@@ -39,9 +40,7 @@ function drop_ink(x, y, seed) {
   paper[centerIndex] = seed;
 
   //update visually:
-  loadPixels();
   change_rgba(centerIndex, paper[centerIndex]);
-  updatePixels();
 }
 
 /**
@@ -50,7 +49,6 @@ function drop_ink(x, y, seed) {
  * @draw
  */
 function draw() {
-
   for (let i = 0; i < paper.length; ++i) {
     // blot ink from each pixel in paper to its neighbours:
     blot(i);
@@ -87,12 +85,12 @@ function blot(index) {
         //it's a positive difference, so store it as is.
         raw_differences.push(paper[index] - paper[neighbours[i]]);
       } else {
-        //it's a negative difference, so store zero. 
+        //it's a negative difference, so store zero.
         raw_differences.push(0);
       }
     }
 
-    //now, see how much the total demand is, by adding all the differences. 
+    //now, see how much the total demand is, by adding all the differences.
     let total_demand = 0;
 
     for (let i = 0; i < raw_differences.length; i++) {
@@ -107,7 +105,7 @@ function blot(index) {
 
     for (let i = 0; i < neighbours.length; i++) {
       if ([i] == 1 || [i] == 4 || [i] == 6 || [i] == 3) {
-        //this is an edge cell. 
+        //this is an edge cell.
 
         //so, give it 97% of what it can actually get.
         let to_give = 0;
@@ -116,7 +114,7 @@ function blot(index) {
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
       } else {
-        //this is a corner cell. 
+        //this is a corner cell.
 
         //so, give it 54% of what it can actually get.
         let to_give = 0;
