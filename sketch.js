@@ -1,58 +1,56 @@
 //ink-blotting, with math; march, 2024.
 //contributors: arjun, shobhan & vivek.
 
-let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
-let all_neighbours = {}; //an object that stores the neighbours for each index.
+/** Optimising this
+    1. Only store active pixels instead of looking for every pixel in each iteration
+    2. Using a map instead of storing every pixel in a flat array (faster to retrieve & check if if it has ink)
+    3. Instead of updating each pixel at a time one, update pixels in groups to reduce overhead
+    4. Dont check neighbours unnecessarily. if a pixel has no ink to offload, we don't check its neighbors
+ * 
+ */
 
-let og_seed = 100000; 
-let min_seed = og_seed; // minimum seed that has to be dropped.
-let max_seed = og_seed*100; //maximum seed that can be dropped.
+let paper = new Map()  // Store only active pixels
+let activePixels = new Set() // Only process pixels that need updates
 
-const capacity = 255; //there is a fixed capacity of 255 for each cell.
-const rate = 4000; //rate at which ink is spread.
+
+// let paper = [] // a virtual array where each element corresponds to one-pixel on the screen.
+let all_neighbours = {} //an object that stores the neighbours for each index.
+
+let og_seed = 100000 
+let min_seed = og_seed // minimum seed that has to be dropped.
+let max_seed = og_seed*100 //maximum seed that can be dropped.
+const capacity = 255 //there is a fixed capacity of 255 for each cell.
+const rate = 4000 //rate at which ink is spread.
 
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
  * @setup
  */
 function setup() {
-  createCanvas(400, 400);
-  pixelDensity(1); //always treat one-pixel as one-pixel in higher density displays.
-  loadPixels();
+  createCanvas(400, 400)
+  pixelDensity(1) // always treat one-pixel as one-pixel in higher density displays.
+  loadPixels()
 
-  //feed an initial value of 0 to the virtual array, so that each element corresponds to one-pixel on the screen and it draws a white screen.
-  for (let i = 0; i < width * height; i++) {
-    paper.push(0);
+  for(let i = 0; i < width * height; i++) {
+    all_neighbours[i] = get_neighbours(i)
   }
 
-  for (let i = 0; i < paper.length; i++) {
-    all_neighbours[i] = get_neighbours(i);
-  }
-
-  drop_ink(width / 2, height / 2, int(random(min_seed, max_seed)));
+  drop_ink(width / 2, height / 2, int(random(min_seed, max_seed)))
 }
 
 /**
- * drops ink on a position.
+ * drops ink on a position. drops ink on the paper and displays it on the screen.
  * @helper
  * @param {int} x — x coordinate of the ink.
  * @param {int} y — y coordinate of the ink.
  * @param {int} seed — amount of ink dropped.
  */
 function drop_ink(x, y, seed) {
-  //drops ink on the paper and displays it on the screen.
-
-  //get the index of the fed-in position.
-  let centerIndex = pos(x, y);
-
-  //change value of elements in paper-array.
-  paper[centerIndex] = seed;
-
-  //update visually:
-  change_rgba(centerIndex, paper[centerIndex]);
+  let centerIndex = pos(x, y)
+  paper.set(centerIndex, seed)
+  activePixels.add(centerIndex)
+  change_rgba(centerIndex, seed)
 }
-
-let fr = [];
 
 /**
  * draws on the screen, every frame (typically 60 frames / second). default p5 function.
@@ -60,93 +58,55 @@ let fr = [];
  * @draw
  */
 function draw() {
-  for(let i = 0; i < paper.length; i++) {
-    // blot ink from each pixel in paper to its neighbours:
-    blot(i)
-    change_rgba(i, paper[i])
-  }
+  let newActivePixels = new Set()
 
+  activePixels.forEach(index => {
+    if(paper.get(index) > capacity) {
+      blot(index, newActivePixels)
+    }
+    change_rgba(index, paper.get(index) || 0)
+  })
+
+  activePixels = newActivePixels
   updatePixels()
 
-  // fr.push(frameRate())
-  // let frl = fr.length
-  // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
-  //   debugger;
-
-  console.log(`${frameCount} and ${frameRate()}`);
+  console.log(`${frameCount} and ${frameRate()}`)
 }
 
 /**
  * blotting function.
  * @param {int} index — the index of the paper array to perform the blotting on.
+ * @param {Set} newActivePixels — a set of active pixels
  */
-function blot(index) {
-  //we check how much ink we have.
-  let ink = paper[index];
+function blot(index, newActivePixels) {
+  let ink = paper.get(index) || 0
+  let offload_desired = ink - capacity
+  let neighbours = all_neighbours[index]
 
-  let offload_desired = ink - capacity; //this is how much the cell wants to give.
+  if(offload_desired > 0) {
+    let raw_differences = neighbours.map(neighbour => 
+      Math.max(0, (paper.get(index) || 0) - (paper.get(neighbour) || 0))
+    )
 
-  //we find all neighbours first.
-  let neighbours = all_neighbours[index];
+    let total_demand = raw_differences.reduce((acc, curr) => acc + curr, 0)
+    let ink_to_give = Math.min(total_demand, rate, offload_desired)
 
-  if (ink > capacity) {
-    //∴ there's a desire to offload. so, we offload the ink.
+    for(let i = 0; i < neighbours.length; i++) {
+      let neighborIndex = neighbours[i]
 
-
-    // for each neighbour, find the difference between the cell and the neighbour
-    let raw_differences = neighbours.map((neighbour) => {
-      return (paper[index] > paper[neighbour]) ? paper[index] - paper[neighbour] : 0
-    })
-
-    //now, we find the total demand.
-    let total_demand = raw_differences.reduce((acc, curr) => acc + curr)
-
-    //however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited.
-    let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 200.
-
-    //now, we go to each neighbour and we give it the relevant ink.
-
-    for (let i = 0; i < neighbours.length; i++) {
-      if (
-        paper[index] > paper[neighbours[i]] + paper[index] / 16 &&
-        paper[index] / paper[neighbours[i]] > 1.1
-      ) {
-        paper[index] -= 1;
-        paper[neighbours[i]] += 1;
+      // check if corner
+      if((paper.get(index) || 0) > (paper.get(neighborIndex) || 0) + (paper.get(index) || 0) / 16) {
+        paper.set(index, (paper.get(index) || 0) - 1)
+        paper.set(neighborIndex, (paper.get(neighborIndex) || 0) + 1)
+        newActivePixels.add(neighborIndex)
       }
 
-      if ([i] == 1 || [i] == 4 || [i] == 6 || [i] == 3) {
-        //this is an edge cell.
-
-        //so, give it 97% of what it can actually get.
-        let to_give = 0;
-        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.97;
-
-        paper[index] -= to_give;
-        paper[neighbours[i]] += to_give;
-      } else {
-        //this is a corner cell.
-
-        //so, give it 54% of what it can actually get.
-        let to_give = 0;
-        to_give = ink_to_give * (raw_differences[i] / total_demand) * 0.54;
-
-        paper[index] -= to_give;
-        paper[neighbours[i]] += to_give;
-      }
+      let to_give = ink_to_give * (raw_differences[i] / total_demand) * (i % 2 === 0 ? 0.54 : 0.97)
+      paper.set(index, (paper.get(index) || 0) - to_give)
+      paper.set(neighborIndex, (paper.get(neighborIndex) || 0) + to_give)
+      newActivePixels.add(neighborIndex)
     }
   }
-
-  for (let i = 0; i < neighbours.length; i++) {
-    if (
-      paper[index] > paper[neighbours[i]] + paper[index] / 16 &&
-      paper[index] / paper[neighbours[i]] > 1.1
-    ) {
-      paper[index] -= 1;
-      paper[neighbours[i]] += 1;
-    }
-  }
-
 }
 
 /**
@@ -157,90 +117,52 @@ function blot(index) {
  */
 function get_neighbours(index) {
   //returns an array of neighbour-indices.
-  let neighbours = [];
+  let neighbours = []
 
   //we calculate naighbours based on the x, y position and not the index (because the index is one-dimensional.
   //so, we convert the index to x, y coordinates again:
-  let indexCoordinate = inversePos(index);
-  let x = indexCoordinate[0];
-  let y = indexCoordinate[1];
+  let indexCoordinate = inversePos(index)
+  let x = indexCoordinate[0]
+  let y = indexCoordinate[1]
 
   //list all 8 neighbour-possibilities for a position:
   let potentialNeighbours = [
-    [x - 1, y - 1], // top-left.
-    [x, y - 1], // top.
-    [x + 1, y - 1], // top-right.
-    [x + 1, y], // right.
-    [x + 1, y + 1], // bottom-right.
-    [x, y + 1], // bottom.
-    [x - 1, y + 1], // bottom-left.
-    [x - 1, y], // left.
-  ];
+    [x - 1, y - 1],   [x, y - 1],   [x + 1, y - 1],
+    [x - 1, y],       /* [x, y] */  [x + 1, y],
+    [x - 1, y + 1],   [x, y + 1],   [x + 1, y + 1]
+  ]
 
-  //console.log(`neighbour positions of ${index} are ${potentialNeighbours}`); //debug-comment to check potential neighbour output.
-
-  //filter out-of-bounds positions:
-  for (let i = 0; i < potentialNeighbours.length; i++) {
-    //a neighbour is out-of-bounds if it is beyond the canvas dimensions.
-
-    let nx = potentialNeighbours[i][0];
-    let ny = potentialNeighbours[i][1];
-
-    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-      neighbours.push(pos(nx, ny));
+  for(let [nx, ny] of potentialNeighbours) {
+    if(nx >= 0 && nx < width && ny >= 0 && ny < height) {
+      neighbours.push(pos(nx, ny))
     }
   }
-
-  //console.log(`neighbours for ${index} are indices: ${neighbours}`); //debug-comment to check neighbours.
-
-  return neighbours;
+  return neighbours
 }
 
 /**
- * finds the index-number in the paper array for a position on the screen.
- * @helper
- * @param {int} x — x-coordinate on the screen.
- * @param {*} y — y-coordinate on the screen.
- * @returns the index number in the paper array.
+ * finds the index-number in the paper array for a position on the screen
+ * @param {int} x — x-coordinate on the screen
+ * @param {int} y — y-coordinate on the screen
+ * @returns the index number in the paper array
  */
-function pos(x, y) {
-  //returns a valid index-number for a given position.
-  let element = floor(x) + floor(y) * width;
-  // console.log(`pos(${x}, ${y}) found element ${element}.`)
-
-  if (element <= paper.length) {
-    return element;
-  } else {
-    return null;
-  }
-}
+function pos(x, y) { return floor(x) + floor(y) * width }
 
 /**
- * finds the x & y coordinate for an index-number in the paper array.
- * @helper
- * @param {int} index — index-number from the paper array.
- * @returns the x & y coordinate on the screen.
+ * finds the x & y coordinate for an index-number in the paper array
+ * @param {int} index — index-number from the paper array
+ * @returns the x & y coordinate on the screen
  */
-function inversePos(index) {
-  //returns x & y coordinates for an index-position.
-  let x = floor(index % width);
-  let y = floor((index - x) / width);
-
-  // console.log(`inverse-pos for index ${index} is ${x}, ${y}.`)
-
-  return [x, y];
-}
+function inversePos(index) { return [floor(index % width), floor(index / width)] }
 
 /**
- * changes rgba values in the p5.pixels array.
- * @helper
- * @param {int} index — index-number from the paper array.
- * @param {float} c — rgb value.
+ * changes rgba values in the p5.pixels array
+ * @param {int} index — index-number from the paper array
+ * @param {float} c — rgb value
  */
 function change_rgba(index, c = 255) {
-  //changes RGBA values for an index position, using the p5.pixels array.
-  c = constrain(c, 0, 255);
-  index *= 4;
-  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c;
-  pixels[index + 3] = 255;
+  c = constrain(c, 0, 255)
+  index *= 4
+  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c
+  pixels[index + 3] = 255
 }
