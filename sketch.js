@@ -54,17 +54,15 @@ function drop_ink(x, y, seed) {
  * @draw
  */
 function draw() {
-  for (let i = 0; i < paper.length; ++i) {
+  for(let i = 0; i < paper.length; ++i) {
     // blot ink from each pixel in paper to its neighbours:
-    blot(i);
+    blot(i)
+    change_rgba(i, paper[i])
   }
-  for (let i = 0; i < paper.length; i++) {
-    //display the blot:
-    change_rgba(i, paper[i]);
-  }
-  updatePixels();
 
-  // console.log(frameRate());
+  updatePixels()
+
+  console.log(frameRate())
 }
 
 /**
@@ -85,25 +83,14 @@ function blot(index) {
   if (ink > capacity) {
     //∴ there's a desire to offload. so, we offload the ink.
 
-    //then, we find the difference between what the cell has and its neighbours.
-    let raw_differences = [];
 
-    for (let i = 0; i < neighbours.length; i++) {
-      if (paper[index] > paper[neighbours[i]]) {
-        //it's a positive difference, so store it as is.
-        raw_differences.push(paper[index] - paper[neighbours[i]]);
-      } else {
-        //it's a negative difference, so store zero.
-        raw_differences.push(0);
-      }
-    }
+    // for each neighbour, find the difference between the cell and the neighbour
+    let raw_differences = neighbours.map((neighbour) => {
+      return (paper[index] > paper[neighbour]) ? paper[index] - paper[neighbour] : 0
+    })
 
-    //now, see how much the total demand is, by adding all the differences.
-    let total_demand = 0;
-
-    for (let i = 0; i < raw_differences.length; i++) {
-      total_demand += raw_differences[i];
-    }
+    //now, we find the total demand.
+    let total_demand = raw_differences.reduce((acc, curr) => acc + curr)
 
     //however, even if the demand is a lot, the surface can only give so much. so, the amount of ink to go has to be limited.
     let ink_to_give = Math.min(total_demand, rate, offload_desired); //in one instance, don't give more than 200.
@@ -111,6 +98,14 @@ function blot(index) {
     //now, we go to each neighbour and we give it the relevant ink.
 
     for (let i = 0; i < neighbours.length; i++) {
+      if (
+        paper[index] > paper[neighbours[i]] + paper[index] / 16 &&
+        paper[index] / paper[neighbours[i]] > 1.1
+      ) {
+        paper[index] -= 1;
+        paper[neighbours[i]] += 1;
+      }
+
       if ([i] == 1 || [i] == 4 || [i] == 6 || [i] == 3) {
         //this is an edge cell.
 
@@ -130,16 +125,6 @@ function blot(index) {
         paper[index] -= to_give;
         paper[neighbours[i]] += to_give;
       }
-    }
-  }
-
-  for (let i = 0; i < neighbours.length; i++) {
-    if (
-      paper[index] > paper[neighbours[i]] + paper[index] / 16 &&
-      paper[index] / paper[neighbours[i]] > 1.1
-    ) {
-      paper[index] -= 1;
-      paper[neighbours[i]] += 1;
     }
   }
 }
