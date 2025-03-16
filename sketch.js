@@ -1,179 +1,183 @@
-//inkblot_1d_v2; february 2025. 
+//ink-blotting, with math; march, 2024.
+//contributors: arjun, shobhan & vivek.
 
-/*
-approach: 
+/** Optimising this
+    1. Only store active pixels instead of looking for every pixel in each iteration
+    2. Using a map instead of storing every pixel in a flat array (faster to retrieve & check if if it has ink)
+    3. Instead of updating each pixel at a time one, update pixels in groups to reduce overhead
+    4. Dont check neighbours unnecessarily. if a pixel has no ink to offload, we don't check its neighbors
+ * 
+ */
 
-- there is a 'surface' that has many 'cells'. in code, the screen is the surface and the cells are defined in 'class Cell'.
-
-- each cell has:
-    - position {x,y} on the surface
-    - size {w,h} (we assume a 'cell' is rectangular)
-    - capacity (how much of something can it hold)
-    - ability to 'speak' 
-
-- an ink molecule has:
-    - position {x,y}
-    - size {r}
-
-- 
-*/
-
-//global declarations: 
-let cells = []; 
-const cellWidth = 10; //this is also the same width for the ink particles. 
-let cellHeight = 0; 
-const capacity = 3; //this is the capacity of what each cell can store. 
+let paper = new Map()  // Store only active pixels
+let activePixels = new Set() // Only process pixels that need updates
 
 
-let inkMolecules = []; 
+// let paper = [] // a virtual array where each element corresponds to one-pixel on the screen.
+let all_neighbours = {} //an object that stores the neighbours for each index.
 
+let og_seed = 100000
+let min_seed = og_seed // minimum seed that has to be dropped.
+let max_seed = og_seed*100 //maximum seed that can be dropped.
+const capacity = 555 //there is a fixed capacity of 255 for each cell.
+const rate = og_seed / 2 //rate at which ink is spread.
+
+/**
+ * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
+ * @setup
+ */
 function setup() {
-createCanvas(1000, 562); //in 16:9 aspect ratio.
-cellHeight = height; //make cellHeight the same as canvas height. 
-rectMode (CENTER);  
+  createCanvas(400, 400)
+  pixelDensity(1) // always treat one-pixel as one-pixel in higher density displays.
+  loadPixels()
 
-background(255); //the background only needs to be drawn once. 
+  for(let i = 0; i < width * height; i++) {
+    all_neighbours[i] = get_neighbours(i)
+  }
 
-createSurface();
-createInk(); 
+  drop_ink(int(random(width / 2)), int(random(height / 2)), int(random(min_seed, max_seed)))
+  drop_ink(int(random(width / 2)), int(random(height / 2)), int(random(min_seed, max_seed)))
 }
 
-function createSurface(){
-//create cells
-let iteration = 0; 
-for (let x = 0+cellWidth/2; x<=width-cellWidth/2; x+=cellWidth){
-cells.push(new Cell (x, 0+cellHeight/2, cellWidth, cellHeight, iteration)); 
-iteration++; 
+/**
+ * drops ink on a position. drops ink on the paper and displays it on the screen.
+ * @param {int} x — x coordinate of the ink.
+ * @param {int} y — y coordinate of the ink.
+ * @param {int} seed — amount of ink dropped.
+ */
+function drop_ink(x, y, seed) {
+  let centerIndex = pos(x, y)
+  paper.set(centerIndex, seed)
+  activePixels.add(centerIndex)
+  change_rgba(centerIndex, seed)
 }
 
-//make each cell find their neighbours.
-for (let cell of cells){
-cell.findNeighbours(); 
-}
-}
-
-function createInk(){
-// create ink molecules
-
-for (let y = cells[0].y-(cellHeight/2)+cellWidth/2; y<=cellHeight-cellWidth/2; y+=cellWidth){
-inkMolecules.push(new InkMolecule(cells[4].x, y)); 
-}
-
-}
-
+/**
+ * draws on the screen, every frame (typically 60 frames / second). default p5 function.
+ * loads pixels, performs the computation and updates the pixels.
+ * @draw
+ */
 function draw() {
-cellFunctions(); 
-inkFunctions(); 
+  let newActivePixels = new Set()
+
+  activePixels.forEach(index => {
+    if(paper.get(index) > capacity) {
+      blot(index, newActivePixels)
+    }
+    change_rgba(index, paper.get(index) || 0)
+  })
+
+  activePixels = newActivePixels
+  updatePixels()
+
+  console.log(`${frameCount} and ${frameRate()}`)
 }
 
-function cellFunctions(){
-for (cell of cells){
-cell.display(); 
-cell.checkContents(); 
-cell.offloadInk(); 
-}
-}
+/**
+ * blotting function.
+ * @param {int} index — the index of the paper array to perform the blotting on.
+ * @param {Set} newActivePixels — a set of active pixels
+ */
+function blot(index, newActivePixels) {
+  let ink = paper.get(index) || 0
+  let offload_desired = ink - capacity
+  let neighbours = all_neighbours[index]
 
-function inkFunctions(){
-for (molecule of inkMolecules){
-molecule.display(); 
-}
-}
+  if(offload_desired > 0) {
+    let raw_differences = neighbours.map(neighbour => 
+      Math.max(0, (paper.get(index) || 0) - (paper.get(neighbour) || 0))
+    )
 
-//cell object. 
-class Cell{
-constructor(x, y, w, h, index){
-this.x = x; 
-this.y = y; 
-this.w = w; 
-this.h = h; 
+    let total_demand = raw_differences.reduce((acc, curr) => acc + curr, 0)
+    let ink_to_give = Math.min(total_demand, rate, offload_desired)
 
-this.capacity = capacity; 
-this.inkInside = []; 
-this.excessInk = []; 
+    for(let i = 0; i < neighbours.length; i++) {
+      let neighborIndex = neighbours[i]
 
-this.index = index; 
-this.leftNeighbour = null;
-this.rightNeighbour = null; 
-}
+      // check if corner
+      if((paper.get(index) || 0) > (paper.get(neighborIndex) || 0) + (paper.get(index) || 0) / 16) {
+        paper.set(index, (paper.get(index) || 0) - 1)
+        paper.set(neighborIndex, (paper.get(neighborIndex) || 0) + 1)
+        newActivePixels.add(neighborIndex)
+      }
 
-//cells find their neighbours on the surface. 
-findNeighbours(){
-if (this.index>0){
-this.leftNeighbour = cells[this.index - 1]; //left cell
-}
-if (this.index < cells.length - 1) {
-this.rightNeighbour = cells[this.index + 1]; // right cell
+      let to_give = ink_to_give * (raw_differences[i] / total_demand) * (i % 2 === 0 ? 0.54 : 0.97)
+      paper.set(index, (paper.get(index) || 0) - to_give)
+      paper.set(neighborIndex, (paper.get(neighborIndex) || 0) + to_give)
+      newActivePixels.add(neighborIndex)
+    }
+  }
 }
 
+/**
+ * finds neighbour-pixels for an index.
+ * @helper
+ * @param {index} index
+ * @returns an array of neighbour-indices.
+ */
+function get_neighbours(index) {
+  //returns an array of neighbour-indices.
+  let neighbours = []
+
+  //we calculate naighbours based on the x, y position and not the index (because the index is one-dimensional.
+  //so, we convert the index to x, y coordinates again:
+  let indexCoordinate = inversePos(index)
+  let x = indexCoordinate[0]
+  let y = indexCoordinate[1]
+
+  //list all 8 neighbour-possibilities for a position:
+  let potentialNeighbours = [
+    [x - 1, y - 1],   [x, y - 1],   [x + 1, y - 1],
+    [x - 1, y],       /* [x, y] */  [x + 1, y],
+    [x - 1, y + 1],   [x, y + 1],   [x + 1, y + 1]
+  ]
+
+  for(let [nx, ny] of potentialNeighbours) {
+    if(nx >= 0 && nx < width && ny >= 0 && ny < height) {
+      neighbours.push(pos(nx, ny))
+    }
+  }
+  return neighbours
 }
 
-display(){
-stroke (0);
-strokeWeight (1); 
-noFill(); 
+/**
+ * finds the index-number in the paper array for a position on the screen
+ * @param {int} x — x-coordinate on the screen
+ * @param {int} y — y-coordinate on the screen
+ * @returns the index number in the paper array
+ */
+function pos(x, y) { return floor(x) + floor(y) * width }
 
-rect (this.x, this.y, this.w, this.h);
+/**
+ * finds the x & y coordinate for an index-number in the paper array
+ * @param {int} index — index-number from the paper array
+ * @returns the x & y coordinate on the screen
+ */
+function inversePos(index) { return [floor(index % width), floor(index / width)] }
+
+/**
+ * changes rgba values in the p5.pixels array
+ * @param {int} index — index-number from the paper array
+ * @param {float} c — rgb value
+ */
+function change_rgba(index, c = 255) {
+  c = constrain(c, 0, 255)
+  let alpha = scaleNumber(c, [min_seed, max_seed], [0, 255])
+
+  index *= 4
+  // pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c
+  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = alpha
+  pixels[index + 3] = 255
 }
 
-checkContents(){
-//this checks how many ink molecules are inside each cell and stores them in an array. i use simple bounding box detection for this. 
-
-this.inkInside = []; 
-
-for (let molecule of inkMolecules){
-if (
-molecule.x >= this.x - this.w / 2 &&
-molecule.x < this.x + this.w / 2 &&
-molecule.y >= this.y - this.h / 2 &&
-molecule.y < this.y + this.h / 2
-) {
-this.inkInside.push(molecule);
-}
-}
-
-//check whether the cell has too much ink. 
-if (this.inkInside.length> this.capacity){
-this.excessInk = this.inkInside.slice(this.capacity); //make a new array for all the extra ink. 
-}else{
-this.excessInk = []; //reset the excessInk to zero if there's nothing left. 
-}
-
-}
-
-offloadInk(){
-
-if (this.excessInk.length>1){
-for (let i = 0; i<this.excessInk.length; i++){
-inkMolecules[i].move(this.rightNeighbour.x); 
-}
-}
-}
-}
-
-//ink particle object. 
-class InkMolecule{
-constructor(x, y, d = cellWidth){
-this.x = x; 
-this.y = y; 
-this.d = d; 
-}
-
-display(){
-noStroke(); 
-
-fill (0, 10); 
-square (this.x, this.y, this.d); 
-}
-
-move(destX){
-this.x = lerp(this.x, destX, 0.1); 
-
-//stop lerp for tiny movements. 
-if (abs(this.x-this.destinationX)<0.5){
-this.x = destX; 
-}
-
-}
-
+/**
+ * given a number to scale, which initally lies within a domain, scales it between the specified range
+ * 
+ * @param {int} num - the numer to scale
+ * @param {arr} domain - the initial domain within which the number is between
+ * @param {arr} range - the final range within which the number should be scaled
+ * @returns the number scaled to the new range
+ */
+function scaleNumber(num, domain, range) {
+  return range[0] + ((num - domain[0]) * (range[1] - range[0])) / (domain[1] - domain[0])
 }
