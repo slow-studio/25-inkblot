@@ -16,11 +16,11 @@ let activePixels = new Set() // Only process pixels that need updates
 // let paper = [] // a virtual array where each element corresponds to one-pixel on the screen.
 let all_neighbours = {} //an object that stores the neighbours for each index.
 
-let og_seed = 100000 
+let og_seed = 100000
 let min_seed = og_seed // minimum seed that has to be dropped.
 let max_seed = og_seed*100 //maximum seed that can be dropped.
-const capacity = 255 //there is a fixed capacity of 255 for each cell.
-const rate = 4000 //rate at which ink is spread.
+const capacity = 555 //there is a fixed capacity of 255 for each cell.
+const rate = og_seed / 2 //rate at which ink is spread.
 
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
@@ -162,10 +162,11 @@ function inversePos(index) { return [floor(index % width), floor(index / width)]
  */
 function change_rgba(index, c = 255) {
   c = constrain(c, 0, 255)
-  // let alpha = scaleNumber(c, [min_seed, max_seed], 255, 0)
+  let alpha = scaleNumber(c, [min_seed, max_seed], [0, 255])
 
   index *= 4
-  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c
+  // pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c
+  pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = alpha
   pixels[index + 3] = 255
 }
 
