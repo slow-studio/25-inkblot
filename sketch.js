@@ -35,12 +35,12 @@ function setup() {
     all_neighbours[i] = get_neighbours(i)
   }
 
-  drop_ink(width / 2, height / 2, int(random(min_seed, max_seed)))
+  drop_ink(int(random(width / 2)), int(random(height / 2)), int(random(min_seed, max_seed)))
+  drop_ink(int(random(width / 2)), int(random(height / 2)), int(random(min_seed, max_seed)))
 }
 
 /**
  * drops ink on a position. drops ink on the paper and displays it on the screen.
- * @helper
  * @param {int} x — x coordinate of the ink.
  * @param {int} y — y coordinate of the ink.
  * @param {int} seed — amount of ink dropped.
@@ -162,7 +162,21 @@ function inversePos(index) { return [floor(index % width), floor(index / width)]
  */
 function change_rgba(index, c = 255) {
   c = constrain(c, 0, 255)
+  // let alpha = scaleNumber(c, [min_seed, max_seed], 255, 0)
+
   index *= 4
   pixels[index + 0] = pixels[index + 1] = pixels[index + 2] = 255 - c
   pixels[index + 3] = 255
+}
+
+/**
+ * given a number to scale, which initally lies within a domain, scales it between the specified range
+ * 
+ * @param {int} num - the numer to scale
+ * @param {arr} domain - the initial domain within which the number is between
+ * @param {arr} range - the final range within which the number should be scaled
+ * @returns the number scaled to the new range
+ */
+function scaleNumber(num, domain, range) {
+  return range[0] + ((num - domain[0]) * (range[1] - range[0])) / (domain[1] - domain[0])
 }
