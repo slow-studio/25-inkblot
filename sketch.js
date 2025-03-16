@@ -4,8 +4,12 @@
 let paper = []; // a virtual array where each element corresponds to one-pixel on the screen.
 let all_neighbours = {}; //an object that stores the neighbours for each index.
 
-let min_seed = 1000000; // minimum seed that has to be dropped.
-let max_seed = 1000000000; //maximum seed that can be dropped.
+let og_seed = 100000; 
+let min_seed = og_seed; // minimum seed that has to be dropped.
+let max_seed = og_seed*100; //maximum seed that can be dropped.
+
+const capacity = 255; //there is a fixed capacity of 255 for each cell.
+const rate = 4000; //rate at which ink is spread.
 
 /**
  * sets up the surface, changes the pixel density of the display to zero, initialises the paper array and drops ink at positions. default p5 function.
@@ -48,13 +52,15 @@ function drop_ink(x, y, seed) {
   change_rgba(centerIndex, paper[centerIndex]);
 }
 
+let fr = [];
+
 /**
  * draws on the screen, every frame (typically 60 frames / second). default p5 function.
  * loads pixels, performs the computation and updates the pixels.
  * @draw
  */
 function draw() {
-  for(let i = 0; i < paper.length; ++i) {
+  for(let i = 0; i < paper.length; i++) {
     // blot ink from each pixel in paper to its neighbours:
     blot(i)
     change_rgba(i, paper[i])
@@ -62,15 +68,18 @@ function draw() {
 
   updatePixels()
 
-  console.log(frameRate())
+  // fr.push(frameRate())
+  // let frl = fr.length
+  // if ((fr[frl-1] + fr[frl-2] + fr[frl-3])/3 < 30)
+  //   debugger;
+
+  console.log(`${frameCount} and ${frameRate()}`);
 }
 
 /**
  * blotting function.
  * @param {int} index — the index of the paper array to perform the blotting on.
  */
-const capacity = 255; //there is a fixed capacity of 255 for each cell.
-const rate = 40000; //rate at which ink is spread.
 function blot(index) {
   //we check how much ink we have.
   let ink = paper[index];
@@ -127,6 +136,17 @@ function blot(index) {
       }
     }
   }
+
+  for (let i = 0; i < neighbours.length; i++) {
+    if (
+      paper[index] > paper[neighbours[i]] + paper[index] / 16 &&
+      paper[index] / paper[neighbours[i]] > 1.1
+    ) {
+      paper[index] -= 1;
+      paper[neighbours[i]] += 1;
+    }
+  }
+
 }
 
 /**
